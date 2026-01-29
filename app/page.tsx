@@ -174,13 +174,28 @@ export default function ChatApp() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: newMessage.content })
         })
-        const data = await res.json()
+        
+        // Check if response is OK, but still parse JSON for error messages
+        let data;
+        try {
+          data = await res.json()
+        } catch (parseError) {
+          console.error("Failed to parse response:", parseError)
+          throw new Error("Invalid response from server")
+        }
 
         // Always show the response, even if it's an error message
         // The API will format quota/error messages appropriately
+        let responseContent = data.response || "Sorry, I couldn't understand that.";
+        
+        // Add API key info to response if available
+        if (data.apiKey) {
+          responseContent += `\n\n🔑 API Key: ${data.apiKey} (${data.provider || 'gemini'})`;
+        }
+        
         const aiReply: Message = {
           id: Date.now().toString(),
-          content: data.response || "Sorry, I couldn't understand that.",
+          content: responseContent,
           senderId: "ai-assistant",
           receiverId: session.user.id,
           createdAt: new Date().toISOString()
@@ -188,10 +203,11 @@ export default function ChatApp() {
         setMessages(prev => [...prev, aiReply])
       } catch (e) {
         console.error("AI Chat Error:", e)
-        // Show error message to user
+        // Show error message to user with more details
+        const errorMessage = e instanceof Error ? e.message : "Unknown error"
         const errorReply: Message = {
           id: Date.now().toString(),
-          content: "❌ Failed to connect to AI service. Please try again later.",
+          content: `❌ Failed to connect to AI service: ${errorMessage}. Please check your server logs or try again later.`,
           senderId: "ai-assistant",
           receiverId: session.user.id,
           createdAt: new Date().toISOString()
