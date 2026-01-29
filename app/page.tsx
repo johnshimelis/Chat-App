@@ -6,7 +6,12 @@ import { useEffect, useState, useRef, useMemo, useCallback, memo } from "react"
 import io, { Socket } from "socket.io-client"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { LogOut, Send, User as UserIcon, Bot, MoreVertical, Sparkles, Zap } from "lucide-react"
+import { LogOut, Send, User as UserIcon, Bot, MoreVertical, Sparkles, Zap, BarChart3, Smile } from "lucide-react"
+import AICoPilot from "@/components/AICoPilot"
+import PollMessage from "@/components/PollMessage"
+import CreatePoll from "@/components/CreatePoll"
+import MessageReactions from "@/components/MessageReactions"
+import ConversationInsights from "@/components/ConversationInsights"
 
 type User = {
   id: string
@@ -23,6 +28,8 @@ type Message = {
   senderId: string
   receiverId: string
   createdAt: string
+  type?: string
+  metadata?: string
 }
 
 // Memoized User Item Component for Performance
@@ -181,6 +188,8 @@ export default function ChatApp() {
   const [input, setInput] = useState("")
   const [isAiTyping, setIsAiTyping] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [showPollCreator, setShowPollCreator] = useState(false)
+  const [aiCoPilotEnabled, setAiCoPilotEnabled] = useState(true)
   const scrollRef = useRef<HTMLDivElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const selectedUserRef = useRef<User | null>(null)
@@ -503,14 +512,52 @@ export default function ChatApp() {
                 </div>
               ) : (
                 <>
-                  {messages.map((msg) => (
-                    <MessageBubble
-                      key={msg.id}
-                      message={msg}
-                      isMe={msg.senderId === session?.user?.id}
-                      userImage={selectedUser.image}
-                    />
-                  ))}
+                  {/* Conversation Insights */}
+                  {selectedUser && selectedUser.id !== 'ai-assistant' && (
+                    <ConversationInsights messages={messages} userId={session?.user?.id || ''} />
+                  )}
+
+                  {messages.map((msg) => {
+                    const isMe = msg.senderId === session?.user?.id
+                    
+                    // Render Poll Messages
+                    if (msg.type === 'poll' && msg.metadata) {
+                      try {
+                        const pollData = JSON.parse(msg.metadata)
+                        return (
+                          <div key={msg.id} className={cn("flex", isMe ? "justify-end" : "justify-start")}>
+                            <PollMessage
+                              messageId={msg.id}
+                              question={pollData.question}
+                              options={pollData.options}
+                              currentUserId={session?.user?.id || ''}
+                            />
+                          </div>
+                        )
+                      } catch (e) {
+                        // Fallback to regular message
+                      }
+                    }
+
+                    // Regular Messages
+                    return (
+                      <div key={msg.id} className="group">
+                        <MessageBubble
+                          message={msg}
+                          isMe={isMe}
+                          userImage={selectedUser.image}
+                        />
+                        {!isMe && (
+                          <div className="ml-11 mt-1">
+                            <MessageReactions
+                              messageId={msg.id}
+                              currentUserId={session?.user?.id || ''}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
                   {isAiTyping && <TypingIndicator />}
                   <div ref={messagesEndRef} />
                 </>
@@ -518,24 +565,77 @@ export default function ChatApp() {
             </div>
 
             {/* Enhanced Input */}
-            <div className="p-4 bg-white dark:bg-gray-900 border-t dark:border-gray-800 shadow-lg">
+            <div className="p-4 bg-white dark:bg-gray-900 border-t dark:border-gray-800 shadow-lg relative">
+              {/* Poll Creator */}
+              {showPollCreator && selectedUser && selectedUser.id !== 'ai-assistant' && (
+                <div className="mb-4">
+                  <CreatePoll
+                    onSend={async (question, options) => {
+                      const pollMessage: Message = {
+                        id: `poll-${Date.now()}`,
+                        content: question,
+                        senderId: session?.user?.id || '',
+                        receiverId: selectedUser.id,
+                        createdAt: new Date().toISOString(),
+                        type: 'poll',
+                        metadata: JSON.stringify({ question, options })
+                      }
+                      setMessages(prev => [...prev, pollMessage])
+                      setShowPollCreator(false)
+                      if (socket) socket.emit("send_message", pollMessage)
+                    }}
+                    onCancel={() => setShowPollCreator(false)}
+                  />
+                </div>
+              )}
+
+              {/* AI Co-pilot */}
+              {aiCoPilotEnabled && selectedUser && (
+                <AICoPilot
+                  input={input}
+                  conversationHistory={messages.map(m => m.content)}
+                  onSelectSuggestion={(suggestion) => {
+                    setInput(suggestion)
+                    inputRef.current?.focus()
+                  }}
+                  enabled={selectedUser.id !== 'ai-assistant'}
+                />
+              )}
+
               <form
-                className="flex items-center space-x-3 max-w-4xl mx-auto"
+                className="flex items-center space-x-3 max-w-4xl mx-auto relative"
                 onSubmit={(e) => { e.preventDefault(); sendMessage() }}
               >
-                <input
-                  ref={inputRef}
-                  className="flex-1 bg-gray-100 dark:bg-gray-800 border-0 rounded-full px-6 py-3.5 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:text-white transition-all duration-200 placeholder:text-gray-400"
-                  placeholder="Type your message..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault()
-                      sendMessage()
-                    }
-                  }}
-                />
+                <div className="flex items-center gap-2 flex-1">
+                  {selectedUser && selectedUser.id !== 'ai-assistant' && (
+                    <button
+                      type="button"
+                      onClick={() => setShowPollCreator(!showPollCreator)}
+                      className={cn(
+                        "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200",
+                        showPollCreator
+                          ? "bg-purple-500 text-white"
+                          : "bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700"
+                      )}
+                      title="Create Poll"
+                    >
+                      <BarChart3 className="w-5 h-5" />
+                    </button>
+                  )}
+                  <input
+                    ref={inputRef}
+                    className="flex-1 bg-gray-100 dark:bg-gray-800 border-0 rounded-full px-6 py-3.5 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:text-white transition-all duration-200 placeholder:text-gray-400"
+                    placeholder="Type your message..."
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault()
+                        sendMessage()
+                      }
+                    }}
+                  />
+                </div>
                 <Button
                   type="submit"
                   className="rounded-full w-12 h-12 p-0 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -544,6 +644,24 @@ export default function ChatApp() {
                   <Send className="w-5 h-5" />
                 </Button>
               </form>
+
+              {/* AI Co-pilot Toggle */}
+              {selectedUser && selectedUser.id !== 'ai-assistant' && (
+                <div className="flex items-center justify-center mt-2">
+                  <button
+                    onClick={() => setAiCoPilotEnabled(!aiCoPilotEnabled)}
+                    className={cn(
+                      "flex items-center gap-1.5 text-xs px-3 py-1 rounded-full transition-all duration-200",
+                      aiCoPilotEnabled
+                        ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                        : "bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    )}
+                  >
+                    <Sparkles className={cn("w-3 h-3", aiCoPilotEnabled && "animate-pulse")} />
+                    <span>AI Co-pilot {aiCoPilotEnabled ? "ON" : "OFF"}</span>
+                  </button>
+                </div>
+              )}
             </div>
           </>
         ) : (

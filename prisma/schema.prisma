@@ -61,10 +61,51 @@ model Message {
   content   String
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+  type      String   @default("text") // text, poll, code, voice
+  metadata  String?  @db.Text // JSON for polls, code language, etc.
   
   senderId  String
   sender    User     @relation("SentMessages", fields: [senderId], references: [id])
   
   receiverId String
   receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  
+  reactions Reaction[]
+  pollVotes PollVote[]
+}
+
+model Reaction {
+  id        String   @id @default(cuid())
+  emoji     String
+  messageId String
+  userId    String
+  createdAt DateTime @default(now())
+  
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  
+  @@unique([messageId, userId, emoji])
+}
+
+model Poll {
+  id        String   @id @default(cuid())
+  messageId String   @unique
+  question  String
+  options   String   @db.Text // JSON array of options
+  createdAt DateTime @default(now())
+  
+  votes     PollVote[]
+}
+
+model PollVote {
+  id        String   @id @default(cuid())
+  pollId    String
+  messageId String
+  userId    String
+  optionIndex Int
+  createdAt DateTime @default(now())
+  
+  poll    Poll    @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  
+  @@unique([pollId, userId])
 }

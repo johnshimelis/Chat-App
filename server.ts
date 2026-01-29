@@ -29,19 +29,46 @@ app.prepare().then(() => {
 
     socket.on("send_message", async (message) => {
       try {
+        // Handle poll messages
+        let pollData = null;
+        if (message.type === 'poll' && message.metadata) {
+          try {
+            const metadata = JSON.parse(message.metadata);
+            pollData = {
+              question: metadata.question,
+              options: JSON.stringify(metadata.options)
+            };
+          } catch (e) {
+            console.error("Error parsing poll metadata:", e);
+          }
+        }
+
         // Save to DB
         const savedMessage = await prisma.message.create({
           data: {
             content: message.content,
             senderId: message.senderId,
             receiverId: message.receiverId,
-            isRead: false
+            isRead: false,
+            type: message.type || 'text',
+            metadata: message.metadata || null
           },
           include: {
             sender: true,
             receiver: true
           }
         });
+
+        // Create poll if needed
+        if (pollData && savedMessage) {
+          await prisma.poll.create({
+            data: {
+              messageId: savedMessage.id,
+              question: pollData.question,
+              options: pollData.options
+            }
+          });
+        }
 
         // Emit to receiver
         io.to(message.receiverId).emit("new_message", savedMessage);
