@@ -42,7 +42,7 @@ Return ONLY a JSON array of strings, no other text. Example: ["suggestion 1", "s
         let suggestions: string[] = [];
         try {
             // Try to extract JSON array
-            const jsonMatch = response.match(/\[.*\]/s);
+            const jsonMatch = response.match(/\[[\s\S]*\]/);
             if (jsonMatch) {
                 suggestions = JSON.parse(jsonMatch[0]);
             } else {

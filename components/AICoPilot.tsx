@@ -26,7 +26,7 @@ export default function AICoPilot({
   const [suggestions, setSuggestions] = useState<AISuggestion[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
-  const debounceRef = useRef<NodeJS.Timeout>()
+  const debounceRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     if (!enabled || input.length < 3) {
@@ -76,17 +76,17 @@ export default function AICoPilot({
 
   return (
     <div className={cn(
-      "absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-3",
+      "absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-[#1F2937] rounded-lg shadow-lg border border-[#E5E7EB] dark:border-[#374151] p-3",
       "animate-in slide-in-from-bottom-2 fade-in duration-200"
     )}>
       <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2 text-xs text-gray-500">
-          <Sparkles className="w-3 h-3 text-purple-500" />
+        <div className="flex items-center gap-2 text-[11px] text-[#6B7280] dark:text-[#9CA3AF]">
+          <Sparkles className="w-3 h-3 text-[#7C3AED]" />
           <span className="font-semibold">AI Suggestions</span>
         </div>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          className="text-[#9CA3AF] hover:text-[#6B7280] dark:hover:text-[#D1D5DB]"
         >
           {isExpanded ? (
             <X className="w-3 h-3" />
@@ -99,8 +99,8 @@ export default function AICoPilot({
       {isExpanded && (
         <div className="space-y-1.5">
           {isLoading ? (
-            <div className="flex items-center gap-2 text-xs text-gray-400 py-2">
-              <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="flex items-center gap-2 text-[11px] text-[#9CA3AF] py-2">
+              <div className="w-4 h-4 border-2 border-[#7C3AED] border-t-transparent rounded-full animate-spin"></div>
               <span>Thinking...</span>
             </div>
           ) : (
@@ -113,18 +113,18 @@ export default function AICoPilot({
                 }}
                 className={cn(
                   "w-full text-left px-3 py-2 rounded-lg text-sm",
-                  "bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20",
-                  "hover:from-purple-100 hover:to-blue-100 dark:hover:from-purple-900/30 dark:hover:to-blue-900/30",
-                  "border border-purple-200 dark:border-purple-800",
-                  "transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]",
+                  "bg-[#EDE9FE] dark:bg-[#5B21B6]/20",
+                  "hover:bg-[#DDD6FE] dark:hover:bg-[#5B21B6]/30",
+                  "border border-[#C4B5FD] dark:border-[#7C3AED]",
+                  "transition-all duration-150 hover:scale-[1.01] active:scale-[0.99]",
                   "group"
                 )}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">
+                  <span className="text-[#111827] dark:text-[#F9FAFB]">
                     {suggestion.text}
                   </span>
-                  <span className="text-[10px] text-purple-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-[10px] text-[#7C3AED] opacity-0 group-hover:opacity-100 transition-opacity font-medium">
                     {Math.round(suggestion.confidence * 100)}%
                   </span>
                 </div>

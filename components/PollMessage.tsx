@@ -101,10 +101,10 @@ export default function PollMessage({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-lg max-w-md">
+    <div className="bg-white dark:bg-[#1F2937] rounded-xl p-4 border border-[#E5E7EB] dark:border-[#374151] shadow-sm max-w-md">
       <div className="flex items-center gap-2 mb-3">
-        <BarChart3 className="w-4 h-4 text-purple-500" />
-        <h4 className="font-semibold text-sm text-gray-900 dark:text-gray-100">{question}</h4>
+        <BarChart3 className="w-4 h-4 text-[#7C3AED]" />
+        <h4 className="font-semibold text-sm text-[#111827] dark:text-[#F9FAFB]">{question}</h4>
       </div>
 
       <div className="space-y-2 mb-3">
@@ -114,11 +114,11 @@ export default function PollMessage({
             onClick={() => !hasVoted && handleVote(index)}
             disabled={hasVoted}
             className={cn(
-              "w-full text-left p-3 rounded-lg border-2 transition-all duration-200",
-              "hover:scale-[1.02] active:scale-[0.98]",
+              "w-full text-left p-3 rounded-lg border transition-all duration-150",
+              "hover:scale-[1.01] active:scale-[0.99]",
               selectedOption === index
-                ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
-                : "border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700",
+                ? "border-[#7C3AED] bg-[#EDE9FE] dark:bg-[#5B21B6]/20"
+                : "border-[#E5E7EB] dark:border-[#374151] hover:border-[#A78BFA] dark:hover:border-[#7C3AED]",
               hasVoted && "cursor-default"
             )}
           >
@@ -126,26 +126,26 @@ export default function PollMessage({
               <span className={cn(
                 "text-sm font-medium",
                 selectedOption === index
-                  ? "text-purple-700 dark:text-purple-300"
-                  : "text-gray-700 dark:text-gray-300"
+                  ? "text-[#7C3AED] dark:text-[#C4B5FD]"
+                  : "text-[#111827] dark:text-[#F9FAFB]"
               )}>
                 {option.text}
               </span>
               {hasVoted && (
-                <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
+                <span className="text-xs font-bold text-[#7C3AED] dark:text-[#A78BFA]">
                   {Math.round(option.percentage)}%
                 </span>
               )}
             </div>
             
             {hasVoted && (
-              <div className="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mt-2">
+              <div className="relative h-2 bg-[#E5E7EB] dark:bg-[#374151] rounded-full overflow-hidden mt-2">
                 <div
                   className={cn(
                     "h-full rounded-full transition-all duration-500",
                     selectedOption === index
-                      ? "bg-gradient-to-r from-purple-500 to-purple-600"
-                      : "bg-gradient-to-r from-gray-400 to-gray-500"
+                      ? "bg-[#7C3AED]"
+                      : "bg-[#9CA3AF]"
                   )}
                   style={{ width: `${option.percentage}%` }}
                 />
@@ -155,13 +155,13 @@ export default function PollMessage({
         ))}
       </div>
 
-      <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-1">
+      <div className="flex items-center justify-between text-[11px] text-[#6B7280] dark:text-[#9CA3AF] pt-2 border-t border-[#E5E7EB] dark:border-[#374151]">
+        <div className="flex items-center gap-1.5">
           <Users className="w-3 h-3" />
           <span>{totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}</span>
         </div>
         {!hasVoted && (
-          <span className="text-purple-500 font-medium">Click to vote</span>
+          <span className="text-[#7C3AED] font-medium">Click to vote</span>
         )}
       </div>
     </div>

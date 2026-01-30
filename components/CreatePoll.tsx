@@ -42,13 +42,13 @@ export default function CreatePoll({ onSend, onCancel }: CreatePollProps) {
   }
 
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl p-4 border border-purple-200 dark:border-purple-800 mb-4 animate-in fade-in slide-in-from-top-2">
+    <div className="bg-[#EDE9FE] dark:bg-[#5B21B6]/20 rounded-lg p-4 border border-[#C4B5FD] dark:border-[#7C3AED] mb-3 animate-in fade-in slide-in-from-top-2">
       <div className="flex items-center gap-2 mb-3">
-        <BarChart3 className="w-5 h-5 text-purple-500" />
-        <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">Create Poll</h3>
+        <BarChart3 className="w-4 h-4 text-[#7C3AED]" />
+        <h3 className="font-semibold text-sm text-[#111827] dark:text-[#F9FAFB]">Create Poll</h3>
         <button
           onClick={onCancel}
-          className="ml-auto text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          className="ml-auto text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F9FAFB]"
         >
           <X className="w-4 h-4" />
         </button>
@@ -59,7 +59,7 @@ export default function CreatePoll({ onSend, onCancel }: CreatePollProps) {
         placeholder="Ask a question..."
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
-        className="w-full mb-3 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none dark:text-white"
+        className="w-full mb-3 px-3 py-2 bg-white dark:bg-[#1F2937] border border-[#E5E7EB] dark:border-[#374151] rounded-lg text-sm focus:ring-2 focus:ring-[#7C3AED] focus:outline-none dark:text-white"
       />
 
       <div className="space-y-2 mb-3">
@@ -70,12 +70,12 @@ export default function CreatePoll({ onSend, onCancel }: CreatePollProps) {
               placeholder={`Option ${index + 1}`}
               value={option}
               onChange={(e) => updateOption(index, e.target.value)}
-              className="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none dark:text-white"
+              className="flex-1 px-3 py-2 bg-white dark:bg-[#1F2937] border border-[#E5E7EB] dark:border-[#374151] rounded-lg text-sm focus:ring-2 focus:ring-[#7C3AED] focus:outline-none dark:text-white"
             />
             {options.length > 2 && (
               <button
                 onClick={() => removeOption(index)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 text-red-500 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#FEE2E2] dark:hover:bg-[#7F1D1D]/30 text-[#EF4444] transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -89,8 +89,8 @@ export default function CreatePoll({ onSend, onCancel }: CreatePollProps) {
           onClick={addOption}
           disabled={options.length >= 6}
           className={cn(
-            "flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400",
-            "hover:text-purple-700 dark:hover:text-purple-300",
+            "flex items-center gap-1 text-[11px] text-[#7C3AED] dark:text-[#A78BFA] font-medium",
+            "hover:text-[#6D28D9] dark:hover:text-[#C4B5FD]",
             "disabled:opacity-50 disabled:cursor-not-allowed"
           )}
         >
@@ -101,7 +101,7 @@ export default function CreatePoll({ onSend, onCancel }: CreatePollProps) {
         <Button
           onClick={handleSend}
           disabled={!question.trim() || options.filter(opt => opt.trim()).length < 2}
-          className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white text-xs px-4 py-1.5"
+          className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-[11px] px-4 py-1.5 font-medium"
         >
           Create Poll
         </Button>

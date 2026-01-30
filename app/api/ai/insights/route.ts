@@ -47,7 +47,7 @@ Return ONLY a JSON array with this format:
 
         let insights: any[] = [];
         try {
-            const jsonMatch = response.match(/\[.*\]/s);
+            const jsonMatch = response.match(/\[[\s\S]*\]/);
             if (jsonMatch) {
                 insights = JSON.parse(jsonMatch[0]);
             }

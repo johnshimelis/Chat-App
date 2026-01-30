@@ -57,29 +57,29 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex h-screen w-full bg-white dark:bg-gray-900">
-            {/* Left Side - Visuals */}
-            <div className="hidden lg:flex w-1/2 bg-gray-100 items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 opacity-90" />
-                <div className="relative z-10 p-12 text-white max-w-lg">
-                    <h1 className="text-5xl font-bold mb-6">Connect across the globe.</h1>
-                    <p className="text-xl opacity-90">
+        <div className="flex h-screen w-full bg-[#F8F9FA] dark:bg-[#0A0E14]">
+            {/* Left Side - Visuals - Figma Design */}
+            <div className="hidden lg:flex w-1/2 bg-[#E2E8F0] items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#6366F1] to-[#8B5CF6]" />
+                <div className="relative z-10 p-14 text-white max-w-lg">
+                    <h1 className="text-5xl font-bold mb-6 leading-tight">Connect across the globe.</h1>
+                    <p className="text-lg opacity-95 leading-relaxed font-medium">
                         Experience real-time messaging with a modern, simple, and elegant interface.
                         Join thousands of users chatting today.
                     </p>
                 </div>
-                <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-white opacity-10 rounded-full blur-3xl"></div>
-                <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-300 opacity-20 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-white opacity-10 rounded-full blur-3xl"></div>
+                <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#A78BFA] opacity-20 rounded-full blur-3xl"></div>
             </div>
 
-            {/* Right Side - Form */}
-            <div className="flex-1 flex items-center justify-center p-8">
-                <div className="w-full max-w-md space-y-8">
+            {/* Right Side - Form - Figma Design */}
+            <div className="flex-1 flex items-center justify-center p-10">
+                <div className="w-full max-w-md space-y-10">
                     <div className="text-center">
-                        <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        <h2 className="text-3xl font-bold tracking-tight text-[#0F172A] dark:text-[#F1F5F9] mb-2">
                             {isLogin ? "Welcome back" : "Create an account"}
                         </h2>
-                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-[15px] text-[#64748B] dark:text-[#94A3B8] font-medium">
                             {isLogin ? "Sign in to continue chatting" : "Join us to start messaging"}
                         </p>
                     </div>
@@ -89,42 +89,42 @@ export default function LoginPage() {
                         <form onSubmit={handleSubmit} className="space-y-4">
                             {!isLogin && (
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 transition-colors">Full Name</label>
+                                    <label className="block text-sm font-bold text-[#0F172A] dark:text-[#F1F5F9] mb-2">Full Name</label>
                                     <input
                                         type="text"
                                         placeholder="John Doe"
                                         required
-                                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white dark:focus:bg-gray-900 transition-all duration-200 outline-none placeholder:text-gray-400"
+                                        className="w-full px-5 py-3 border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1F2832] text-[#0F172A] dark:text-[#F1F5F9] rounded-xl focus:ring-2 focus:ring-[#6366F1] focus:border-transparent transition-all duration-200 outline-none placeholder:text-[#94A3B8] font-medium shadow-sm"
                                         value={form.name}
                                         onChange={e => setForm({ ...form, name: e.target.value })}
                                     />
                                 </div>
                             )}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 transition-colors">Email Address</label>
+                                <label className="block text-sm font-bold text-[#0F172A] dark:text-[#F1F5F9] mb-2">Email Address</label>
                                 <input
                                     type="email"
                                     placeholder="you@example.com"
                                     required
-                                    className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white dark:focus:bg-gray-900 transition-all duration-200 outline-none placeholder:text-gray-400"
+                                    className="w-full px-5 py-3 border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1F2832] text-[#0F172A] dark:text-[#F1F5F9] rounded-xl focus:ring-2 focus:ring-[#6366F1] focus:border-transparent transition-all duration-200 outline-none placeholder:text-[#94A3B8] font-medium shadow-sm"
                                     value={form.email}
                                     onChange={e => setForm({ ...form, email: e.target.value })}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 transition-colors">Password</label>
+                                <label className="block text-sm font-bold text-[#0F172A] dark:text-[#F1F5F9] mb-2">Password</label>
                                 <input
                                     type="password"
                                     placeholder="••••••••"
                                     required
-                                    className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white dark:focus:bg-gray-900 transition-all duration-200 outline-none placeholder:text-gray-400"
+                                    className="w-full px-5 py-3 border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1F2832] text-[#0F172A] dark:text-[#F1F5F9] rounded-xl focus:ring-2 focus:ring-[#6366F1] focus:border-transparent transition-all duration-200 outline-none placeholder:text-[#94A3B8] font-medium shadow-sm"
                                     value={form.password}
                                     onChange={e => setForm({ ...form, password: e.target.value })}
                                 />
                             </div>
 
                             {error && (
-                                <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm border border-red-200">
+                                <div className="p-4 rounded-xl bg-[#FEE2E2] text-[#DC2626] text-sm font-semibold border border-[#FCA5A5] shadow-sm">
                                     {error}
                                 </div>
                             )}
@@ -132,22 +132,22 @@ export default function LoginPage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
+                                className="w-full py-3.5 bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] hover:from-[#4F46E5] hover:to-[#7C3AED] text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all duration-200 active:scale-[0.98] disabled:opacity-50 text-[15px]"
                             >
                                 {loading ? "Processing..." : (isLogin ? "Sign In with Email" : "Create Account")}
                             </button>
                         </form>
 
                         <div className="relative">
-                            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-300 dark:border-gray-700"></div></div>
-                            <div className="relative flex justify-center text-sm"><span className="px-3 bg-white dark:bg-gray-900 text-gray-500">Or continue with</span></div>
+                            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[#E2E8F0] dark:border-[#334155]"></div></div>
+                            <div className="relative flex justify-center text-sm"><span className="px-4 bg-[#F8F9FA] dark:bg-[#0A0E14] text-[#64748B] dark:text-[#94A3B8] font-semibold">Or continue with</span></div>
                         </div>
 
-                        {/* Google Button - Secondary */}
+                        {/* Google Button - Secondary - Figma Design */}
                         <button
                             type="button"
                             onClick={() => signIn("google", { callbackUrl: "/" })}
-                            className="w-full flex items-center justify-center gap-3 px-8 py-3.5 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+                            className="w-full flex items-center justify-center gap-3 px-8 py-3.5 border border-[#E2E8F0] dark:border-[#334155] rounded-xl shadow-sm bg-white dark:bg-[#1F2832] text-[14px] font-bold text-[#0F172A] dark:text-[#F1F5F9] hover:bg-[#F8F9FA] dark:hover:bg-[#1F2832] transition-all duration-200"
                         >
                             <svg className="h-5 w-5" viewBox="0 0 24 24">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -159,11 +159,11 @@ export default function LoginPage() {
                         </button>
 
                         <div className="text-center">
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                            <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] font-medium">
                                 {isLogin ? "Don't have an account?" : "Already have an account?"}
                                 <button
                                     onClick={() => { setIsLogin(!isLogin); setError(""); }}
-                                    className="ml-1 text-indigo-600 font-semibold hover:text-indigo-500 transition-colors"
+                                    className="ml-2 text-[#6366F1] font-bold hover:text-[#8B5CF6] transition-colors"
                                 >
                                     {isLogin ? "Sign up" : "Log in"}
                                 </button>

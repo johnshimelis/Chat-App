@@ -1,15 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { Smile, Heart, ThumbsUp, Fire, PartyPopper } from "lucide-react"
+import { Smile } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const REACTIONS = [
-  { emoji: "👍", icon: ThumbsUp, label: "Like" },
-  { emoji: "❤️", icon: Heart, label: "Love" },
-  { emoji: "😊", icon: Smile, label: "Happy" },
-  { emoji: "🔥", icon: Fire, label: "Fire" },
-  { emoji: "🎉", icon: PartyPopper, label: "Celebrate" }
+  { emoji: "👍", label: "Like" },
+  { emoji: "❤️", label: "Love" },
+  { emoji: "😊", label: "Happy" },
+  { emoji: "🔥", label: "Fire" },
+  { emoji: "🎉", label: "Celebrate" }
 ]
 
 interface Reaction {
@@ -59,14 +59,14 @@ export default function MessageReactions({
               key={index}
               onClick={() => handleReaction(reaction.emoji)}
               className={cn(
-                "flex items-center gap-1 px-2 py-0.5 rounded-full text-xs",
-                "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700",
-                "transition-all duration-200 hover:scale-110 active:scale-95",
-                reaction.userReacted && "bg-blue-100 dark:bg-blue-900/30 border border-blue-300 dark:border-blue-700"
+                "flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px]",
+                "bg-[#F3F4F6] dark:bg-[#2A3441] hover:bg-[#E5E7EB] dark:hover:bg-[#374151]",
+                "transition-all duration-150 hover:scale-105 active:scale-95",
+                reaction.userReacted && "bg-[#DBEAFE] dark:bg-[#1E3A8A]/30 border border-[#3B82F6] dark:border-[#60A5FA]"
               )}
             >
               <span>{reaction.emoji}</span>
-              <span className="text-gray-600 dark:text-gray-400">{reaction.count}</span>
+              <span className="text-[#111827] dark:text-[#F9FAFB] font-medium">{reaction.count}</span>
             </button>
           ))}
         </div>
@@ -76,16 +76,16 @@ export default function MessageReactions({
         onClick={() => setShowPicker(!showPicker)}
         className={cn(
           "w-6 h-6 rounded-full flex items-center justify-center",
-          "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700",
-          "transition-all duration-200 hover:scale-110",
-          showPicker && "bg-purple-100 dark:bg-purple-900/30"
+          "bg-[#F3F4F6] dark:bg-[#2A3441] hover:bg-[#E5E7EB] dark:hover:bg-[#374151]",
+          "transition-all duration-150 hover:scale-105",
+          showPicker && "bg-[#EDE9FE] dark:bg-[#5B21B6]/30"
         )}
       >
-        <Smile className="w-3 h-3 text-gray-500" />
+        <Smile className="w-3 h-3 text-[#6B7280] dark:text-[#9CA3AF]" />
       </button>
 
       {showPicker && (
-        <div className="absolute bottom-full left-0 mb-2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-2 flex gap-1 animate-in fade-in slide-in-from-bottom-2">
+        <div className="absolute bottom-full left-0 mb-2 bg-white dark:bg-[#1F2937] rounded-lg shadow-lg border border-[#E5E7EB] dark:border-[#374151] p-2 flex gap-1 animate-in fade-in slide-in-from-bottom-2">
           {REACTIONS.map((reaction) => (
             <button
               key={reaction.emoji}
@@ -94,9 +94,9 @@ export default function MessageReactions({
                 setShowPicker(false)
               }}
               className={cn(
-                "w-10 h-10 rounded-lg flex items-center justify-center",
-                "hover:bg-gray-100 dark:hover:bg-gray-700",
-                "transition-all duration-200 hover:scale-125 active:scale-95",
+                "w-9 h-9 rounded-lg flex items-center justify-center",
+                "hover:bg-[#F3F4F6] dark:hover:bg-[#374151]",
+                "transition-all duration-150 hover:scale-110 active:scale-95",
                 "text-xl"
               )}
               title={reaction.label}

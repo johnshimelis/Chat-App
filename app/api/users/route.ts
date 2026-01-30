@@ -48,9 +48,44 @@ export async function GET() {
             countMap.set(item.senderId, item._count.id);
         });
 
+        // Get last message for each conversation
+        const lastMessages = await prisma.message.findMany({
+            where: {
+                OR: [
+                    { senderId: currentUserId, receiverId: { in: users.map(u => u.id) } },
+                    { senderId: { in: users.map(u => u.id) }, receiverId: currentUserId }
+                ]
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            select: {
+                id: true,
+                content: true,
+                senderId: true,
+                receiverId: true,
+                createdAt: true
+            }
+        });
+
+        // Create a map of last messages by conversation partner
+        const lastMessageMap = new Map<string, { content: string, createdAt: Date, senderId: string }>();
+        lastMessages.forEach(msg => {
+            const partnerId = msg.senderId === currentUserId ? msg.receiverId : msg.senderId;
+            if (!lastMessageMap.has(partnerId)) {
+                lastMessageMap.set(partnerId, {
+                    content: msg.content,
+                    createdAt: msg.createdAt,
+                    senderId: msg.senderId
+                });
+            }
+        });
+
         const usersWithStats = users.map(user => ({
             ...user,
-            unreadCount: countMap.get(user.id) || 0
+            unreadCount: countMap.get(user.id) || 0,
+            lastMessage: lastMessageMap.get(user.id)?.content || null,
+            lastMessageTime: lastMessageMap.get(user.id)?.createdAt || null
         }));
 
         return NextResponse.json(usersWithStats);
