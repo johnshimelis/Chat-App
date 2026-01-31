@@ -6,7 +6,7 @@ import { useEffect, useState, useRef, useMemo, useCallback, memo } from "react"
 import io, { Socket } from "socket.io-client"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { LogOut, Send, User as UserIcon, Bot, MoreVertical, Sparkles, Zap, BarChart3, Smile, Home, MessageCircle, Circle, Compass, Folder, Image as ImageIcon, Settings, Search, Phone, Video, Paperclip, Mic, Bell, ChevronDown, ArrowLeft, Pencil, Gift, Sun, Check, CheckCheck, Filter, Star } from "lucide-react"
+import { LogOut, Send, User as UserIcon, Bot, MoreVertical, Sparkles, Zap, BarChart3, Smile, Home, MessageCircle, Circle, Compass, Folder, Image as ImageIcon, Settings, Search, Phone, Video, Paperclip, Mic, Bell, ChevronDown, ArrowLeft, Pencil, Gift, Sun, Check, CheckCheck, Filter, Star, Archive, VolumeX, Upload, X, Trash2, ChevronRight } from "lucide-react"
 import AICoPilot from "@/components/AICoPilot"
 import PollMessage from "@/components/PollMessage"
 import CreatePoll from "@/components/CreatePoll"
@@ -45,7 +45,21 @@ interface ConversationItemProps {
   user: User
   isSelected: boolean
   onClick: () => void
+  onRightClick: (e: React.MouseEvent, user: User) => void
   currentUserId?: string
+}
+
+interface ContextMenuProps {
+  user: User
+  position: { x: number; y: number }
+  onClose: () => void
+  onMarkAsUnread: () => void
+  onArchive: () => void
+  onMute: () => void
+  onContactInfo: () => void
+  onExportChat: () => void
+  onClearChat: () => void
+  onDeleteChat: () => void
 }
 
 interface MessageBubbleProps {
@@ -68,85 +82,85 @@ function UserDropdownComponent(props: UserDropdownProps) {
   const { userName, userEmail, userImage, onClose, onLogout, onGoToDashboard } = props
 
   return (
-    <div className="absolute left-[74px] top-[57px] w-[280px] bg-white shadow-2xl border border-[#E1E5E9] z-50 rounded-xl overflow-hidden" style={{ maxHeight: '600px' }}>
+    <div className="absolute left-[20px] top-[56px] w-[240px] bg-white shadow-2xl border border-[#E1E5E9] z-[100] rounded-xl overflow-hidden" style={{ maxHeight: '420px' }}>
       {/* User Info Section */}
-      <div className="p-6 border-b border-[#E1E5E9]">
-        <div className="flex items-center gap-3 mb-4">
+      <div className="p-4 border-b border-[#E1E5E9]">
+        <div className="flex items-center gap-2 mb-3">
           {userImage ? (
-            <img src={userImage} alt={userName || "User"} className="w-10 h-10 rounded-full" />
+            <img src={userImage} alt={userName || "User"} className="w-8 h-8 rounded-full" />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white text-sm font-bold">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white text-xs font-bold">
               {userName?.[0] || "U"}
             </div>
           )}
           <div className="flex-1">
-            <p className="font-semibold text-[15px] text-[#111827]">{userName || "User"}</p>
-            <p className="text-[13px] text-[#64748B]">{userEmail || "No email"}</p>
+            <p className="font-semibold text-[13px] text-[#111827]">{userName || "User"}</p>
+            <p className="text-[11px] text-[#64748B]">{userEmail || "No email"}</p>
           </div>
         </div>
 
         {/* Credits Section */}
-        <div className="bg-[#F8F9FA] rounded-lg p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[13px] font-semibold text-[#111827]">Credits</span>
-            <span className="text-[13px] font-semibold text-[#10B981]">20 left</span>
+        <div className="bg-[#F8F9FA] rounded-lg p-3">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[11px] font-semibold text-[#111827]">Credits</span>
+            <span className="text-[11px] font-semibold text-[#10B981]">20 left</span>
           </div>
-          <div className="w-full bg-[#E2E8F0] rounded-full h-2 mb-2">
-            <div className="bg-[#10B981] h-2 rounded-full" style={{ width: '80%' }}></div>
+          <div className="w-full bg-[#E2E8F0] rounded-full h-1.5 mb-1.5">
+            <div className="bg-[#10B981] h-1.5 rounded-full" style={{ width: '80%' }}></div>
           </div>
-          <div className="flex items-center justify-between text-[11px] text-[#64748B] mb-1">
+          <div className="flex items-center justify-between text-[10px] text-[#64748B] mb-0.5">
             <span>5 of 25 used today</span>
             <span className="text-[#10B981]">+25 tomorrow</span>
           </div>
-          <p className="text-[11px] text-[#64748B]">Renews in 6h 24m</p>
+          <p className="text-[10px] text-[#64748B]">Renews in 6h 24m</p>
         </div>
       </div>
 
       {/* Menu Options */}
-      <div className="p-2">
+      <div className="p-1.5">
         <button
           onClick={onGoToDashboard}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
         >
-          <ArrowLeft className="w-4 h-4 text-[#64748B]" />
-          <span className="text-[14px] text-[#111827]">Go back to dashboard</span>
+          <ArrowLeft className="w-3.5 h-3.5 text-[#64748B]" />
+          <span className="text-[12px] text-[#111827]">Go back to dashboard</span>
         </button>
         <button
           onClick={() => {
             // Handle rename file
             console.log("Rename file clicked")
           }}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
         >
-          <Pencil className="w-4 h-4 text-[#64748B]" />
-          <span className="text-[14px] text-[#111827]">Rename file</span>
+          <Pencil className="w-3.5 h-3.5 text-[#64748B]" />
+          <span className="text-[12px] text-[#111827]">Rename file</span>
         </button>
         <button
           onClick={() => {
             // Handle win free credits
             console.log("Win free credits clicked")
           }}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
         >
-          <Gift className="w-4 h-4 text-[#64748B]" />
-          <span className="text-[14px] text-[#111827]">Win free credits</span>
+          <Gift className="w-3.5 h-3.5 text-[#64748B]" />
+          <span className="text-[12px] text-[#111827]">Win free credits</span>
         </button>
         <button
           onClick={() => {
             // Handle theme style
             console.log("Theme style clicked")
           }}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
         >
-          <Sun className="w-4 h-4 text-[#64748B]" />
-          <span className="text-[14px] text-[#111827]">Theme Style</span>
+          <Sun className="w-3.5 h-3.5 text-[#64748B]" />
+          <span className="text-[12px] text-[#111827]">Theme Style</span>
         </button>
         <button
           onClick={onLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
         >
-          <LogOut className="w-4 h-4 text-[#64748B]" />
-          <span className="text-[14px] text-[#111827]">Log out</span>
+          <LogOut className="w-3.5 h-3.5 text-[#64748B]" />
+          <span className="text-[12px] text-[#111827]">Log out</span>
         </button>
       </div>
     </div>
@@ -155,6 +169,148 @@ function UserDropdownComponent(props: UserDropdownProps) {
 
 const UserDropdown = memo(UserDropdownComponent)
 UserDropdown.displayName = "UserDropdown"
+
+// Context Menu Component
+function ContextMenuComponent(props: ContextMenuProps) {
+  const { user, position, onClose, onMarkAsUnread, onArchive, onMute, onContactInfo, onExportChat, onClearChat, onDeleteChat } = props
+  const menuRef = useRef<HTMLDivElement>(null)
+  const isInitialMount = useRef(true)
+
+  useEffect(() => {
+    // Prevent immediate closure - use a flag
+    let canClose = false
+    const enableClose = setTimeout(() => {
+      canClose = true
+    }, 100)
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!canClose) return
+      // Don't close on right-click events
+      if (e.button === 2) return
+      
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        onClose()
+      }
+    }
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    // Use click instead of mousedown to avoid immediate closure
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside, true)
+      document.addEventListener('keydown', handleEscape)
+    }, 100)
+
+    return () => {
+      clearTimeout(enableClose)
+      clearTimeout(timeoutId)
+      document.removeEventListener('click', handleClickOutside, true)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [onClose])
+
+  return (
+    <div
+      ref={menuRef}
+      className="context-menu absolute bg-white shadow-lg border border-[#E1E5E9] rounded-lg z-[200] min-w-[200px] py-1"
+      style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        onClick={() => {
+          onMarkAsUnread()
+          onClose()
+        }}
+        className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-[#F5F5F5] transition-colors text-left"
+      >
+        <div className="flex items-center gap-3">
+          <MessageCircle className="w-4 h-4 text-[#64748B]" />
+          <span className="text-[13px] text-[#111827]">Mark as unread</span>
+        </div>
+        <Check className="w-4 h-4 text-[#64748B]" />
+      </button>
+      
+      <button
+        onClick={() => {
+          onArchive()
+          onClose()
+        }}
+        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#F5F5F5] transition-colors text-left"
+      >
+        <Archive className="w-4 h-4 text-[#64748B]" />
+        <span className="text-[13px] text-[#111827]">Archive</span>
+      </button>
+      
+      <button
+        onClick={() => {
+          onMute()
+          onClose()
+        }}
+        className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-[#F5F5F5] transition-colors text-left"
+      >
+        <div className="flex items-center gap-3">
+          <VolumeX className="w-4 h-4 text-[#64748B]" />
+          <span className="text-[13px] text-[#111827]">Mute</span>
+        </div>
+        <ChevronRight className="w-4 h-4 text-[#64748B]" />
+      </button>
+      
+      <button
+        onClick={() => {
+          onContactInfo()
+          onClose()
+        }}
+        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#F5F5F5] transition-colors text-left"
+      >
+        <UserIcon className="w-4 h-4 text-[#64748B]" />
+        <span className="text-[13px] text-[#111827]">Contact info</span>
+      </button>
+      
+      <button
+        onClick={() => {
+          onExportChat()
+          onClose()
+        }}
+        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#F5F5F5] transition-colors text-left"
+      >
+        <Upload className="w-4 h-4 text-[#64748B]" />
+        <span className="text-[13px] text-[#111827]">Export chat</span>
+      </button>
+      
+      <button
+        onClick={() => {
+          onClearChat()
+          onClose()
+        }}
+        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#F5F5F5] transition-colors text-left"
+      >
+        <X className="w-4 h-4 text-[#64748B]" />
+        <span className="text-[13px] text-[#111827]">Clear chat</span>
+      </button>
+      
+      <button
+        onClick={() => {
+          onDeleteChat()
+          onClose()
+        }}
+        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#F5F5F5] transition-colors text-left"
+      >
+        <Trash2 className="w-4 h-4 text-[#EF4444]" />
+        <span className="text-[13px] text-[#EF4444]">Delete chat</span>
+      </button>
+    </div>
+  )
+}
+
+const ContextMenu = memo(ContextMenuComponent)
+ContextMenu.displayName = "ContextMenu"
 
 // Left Navigation Sidebar Component - Figma Design
 interface LeftNavBarComponentProps extends LeftNavBarProps {
@@ -266,7 +422,7 @@ LeftNavBar.displayName = "LeftNavBar"
 
 // Conversation List Item - Figma Design
 function ConversationItemComponent(props: ConversationItemProps) {
-  const { user, isSelected, onClick, currentUserId } = props
+  const { user, isSelected, onClick, onRightClick, currentUserId } = props
 
   const lastMessage = user.id === 'ai-assistant'
     ? "Always here to help"
@@ -288,9 +444,16 @@ function ConversationItemComponent(props: ConversationItemProps) {
     return msgTime.toLocaleDateString()
   }, [user.lastMessageTime, user.id])
 
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    onRightClick(e, user)
+  }
+
   return (
     <div
       onClick={onClick}
+      onContextMenu={handleContextMenu}
       className={cn(
         "flex items-center gap-3 px-4 py-3 cursor-pointer transition-all relative group rounded-lg mx-2 my-1",
         isSelected
@@ -438,6 +601,8 @@ export default function ChatApp() {
   const [input, setInput] = useState("")
   const [isAiTyping, setIsAiTyping] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [showNewMessageModal, setShowNewMessageModal] = useState(false)
+  const [newMessageSearch, setNewMessageSearch] = useState("")
   const [showPollCreator, setShowPollCreator] = useState(false)
   const [aiCoPilotEnabled, setAiCoPilotEnabled] = useState(true)
   const [showContactInfo, setShowContactInfo] = useState(false)
@@ -445,6 +610,7 @@ export default function ChatApp() {
   const [activeSection, setActiveSection] = useState("messages")
   const [searchQuery, setSearchQuery] = useState("")
   const [topSearchQuery, setTopSearchQuery] = useState("")
+  const [contextMenu, setContextMenu] = useState<{ user: User; position: { x: number; y: number } } | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const selectedUserRef = useRef<User | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -456,14 +622,29 @@ export default function ChatApp() {
 
   // Close dropdown when clicking outside
   useEffect(() => {
+    if (!showUserDropdown) return
+    
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      // Don't close if clicking the logo button
+      const logoButton = document.querySelector('button[class*="w-8 h-8 rounded-xl bg-[#10B981]"]')
+      if (logoButton && (logoButton.contains(target) || logoButton === target)) {
+        return
+      }
+      // Close if clicking outside the dropdown
+      if (dropdownRef.current && !dropdownRef.current.contains(target)) {
         setShowUserDropdown(false)
       }
     }
-    if (showUserDropdown) {
+    
+    // Use setTimeout to avoid immediate closure
+    const timeoutId = setTimeout(() => {
       document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, 100)
+    
+    return () => {
+      clearTimeout(timeoutId)
+      document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [showUserDropdown])
 
@@ -510,25 +691,25 @@ export default function ChatApp() {
   }, [session])
 
   const fetchUsers = useCallback(async () => {
-    try {
-      const res = await fetch("/api/users")
-      if (res.ok) {
-        const data = await res.json()
-        const aiUser: User = {
-          id: "ai-assistant",
-          name: "AI Assistant",
-          image: null,
-          email: "ai@bot",
-          online: true,
+      try {
+        const res = await fetch("/api/users")
+        if (res.ok) {
+          const data = await res.json()
+          const aiUser: User = {
+            id: "ai-assistant",
+            name: "AI Assistant",
+            image: null,
+            email: "ai@bot",
+            online: true,
           unreadCount: 0,
           lastMessage: "Always here to help",
           lastMessageTime: null
+          }
+          setUsers([aiUser, ...data])
         }
-        setUsers([aiUser, ...data])
+      } catch (err) {
+        console.error("Failed to load users", err)
       }
-    } catch (err) {
-      console.error("Failed to load users", err)
-    }
   }, [])
 
   useEffect(() => {
@@ -611,11 +792,11 @@ export default function ChatApp() {
         setMessages((prev) => {
           const filtered = prev.filter(m => m.id !== tempId)
           return [...filtered, {
-            id: Date.now().toString(),
+          id: Date.now().toString(),
             content: responseContent,
-            senderId: "ai-assistant",
-            receiverId: session.user.id,
-            createdAt: new Date().toISOString()
+          senderId: "ai-assistant",
+          receiverId: session.user.id,
+          createdAt: new Date().toISOString()
           }]
         })
       } catch (e) {
@@ -660,8 +841,98 @@ export default function ChatApp() {
     })
   }, [users, searchQuery])
 
+  const filteredUsersForNewMessage = useMemo(() => {
+    if (!users.length) return []
+    
+    // Filter out the current user and AI assistant
+    const availableUsers = users.filter(user => 
+      user.id !== session?.user?.id && user.id !== 'ai-assistant'
+    )
+    
+    if (newMessageSearch.trim()) {
+      return availableUsers.filter(user =>
+        user.name?.toLowerCase().includes(newMessageSearch.toLowerCase()) ||
+        user.email?.toLowerCase().includes(newMessageSearch.toLowerCase())
+      )
+    }
+    
+    return availableUsers
+  }, [users, newMessageSearch, session?.user?.id])
+
+  const handleRightClick = useCallback((e: React.MouseEvent, user: User) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    const target = e.currentTarget as HTMLElement
+    const conversationListElement = target.closest('.conversation-list-container')
+    
+    if (conversationListElement) {
+      const itemRect = target.getBoundingClientRect()
+      const containerRect = conversationListElement.getBoundingClientRect()
+      
+      // Position menu to the right of the item, aligned with the top
+      const position = {
+        x: itemRect.right - containerRect.left + 8, // 8px gap to the right
+        y: itemRect.top - containerRect.top
+      }
+      
+      setContextMenu({
+        user,
+        position
+      })
+    } else {
+      setContextMenu({
+        user,
+        position: {
+          x: e.clientX,
+          y: e.clientY
+        }
+      })
+    }
+  }, [])
+
+  const handleMarkAsUnread = useCallback(() => {
+    if (contextMenu) {
+      setUsers(prev => prev.map(u =>
+        u.id === contextMenu.user.id ? { ...u, unreadCount: (u.unreadCount || 0) + 1 } : u
+      ))
+    }
+  }, [contextMenu])
+
+  const handleArchive = useCallback(() => {
+    console.log("Archive chat:", contextMenu?.user.name)
+  }, [contextMenu])
+
+  const handleMute = useCallback(() => {
+    console.log("Mute chat:", contextMenu?.user.name)
+  }, [contextMenu])
+
+  const handleContactInfo = useCallback(() => {
+    console.log("Contact info:", contextMenu?.user.name)
+  }, [contextMenu])
+
+  const handleExportChat = useCallback(() => {
+    console.log("Export chat:", contextMenu?.user.name)
+  }, [contextMenu])
+
+  const handleClearChat = useCallback(() => {
+    if (contextMenu && selectedUser?.id === contextMenu.user.id) {
+      setMessages([])
+    }
+    console.log("Clear chat:", contextMenu?.user.name)
+  }, [contextMenu, selectedUser])
+
+  const handleDeleteChat = useCallback(() => {
+    if (contextMenu && selectedUser?.id === contextMenu.user.id) {
+      setSelectedUser(null)
+      setMessages([])
+    }
+    setUsers(prev => prev.filter(u => u.id !== contextMenu?.user.id))
+    console.log("Delete chat:", contextMenu?.user.name)
+  }, [contextMenu, selectedUser])
+
   if (status === "loading") {
-    return (
+  return (
       <div className="flex h-screen items-center justify-center bg-[#F8F9FA]">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -674,7 +945,7 @@ export default function ChatApp() {
   return (
     <div className="flex h-screen overflow-hidden bg-[#f3f3ee]">
       {/* Left Navigation Bar - Figma Design */}
-      <div className="relative h-full">
+      <div className="relative h-full overflow-visible">
         <LeftNavBar
           activeSection={activeSection}
           userImage={session?.user?.image || null}
@@ -688,20 +959,22 @@ export default function ChatApp() {
           }}
         />
         {showUserDropdown && (
-          <UserDropdown
-            userName={session?.user?.name || null}
-            userEmail={session?.user?.email || null}
-            userImage={session?.user?.image || null}
-            onClose={() => setShowUserDropdown(false)}
-            onLogout={() => {
-              signOut()
-              setShowUserDropdown(false)
-            }}
-            onGoToDashboard={() => {
-              router.push('/dashboard')
-              setShowUserDropdown(false)
-            }}
-          />
+          <div ref={dropdownRef}>
+            <UserDropdown
+              userName={session?.user?.name || null}
+              userEmail={session?.user?.email || null}
+              userImage={session?.user?.image || null}
+              onClose={() => setShowUserDropdown(false)}
+              onLogout={() => {
+                signOut()
+                setShowUserDropdown(false)
+              }}
+              onGoToDashboard={() => {
+                router.push('/dashboard')
+                setShowUserDropdown(false)
+              }}
+            />
+          </div>
         )}
       </div>
 
@@ -727,7 +1000,8 @@ export default function ChatApp() {
                   if (e.key === 'Enter' && e.metaKey) {
                     // Handle Cmd+K shortcut
                     e.preventDefault()
-                    document.querySelector('input[placeholder="Search"]')?.focus()
+                    const searchInput = document.querySelector('input[placeholder="Search"]') as HTMLInputElement
+                    searchInput?.focus()
                   }
                 }}
                 className="pl-9 pr-20 py-1.5 bg-[#F8F9FA] border border-[#E1E5E9] rounded-lg text-sm text-[#111827] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent w-[240px]"
@@ -760,13 +1034,13 @@ export default function ChatApp() {
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
                 className="flex items-center gap-2 hover:bg-[#F5F5F5] rounded-lg px-2 py-1.5 transition-colors"
               >
-                {session?.user?.image ? (
+            {session?.user?.image ? (
                   <img src={session.user.image} alt={session.user.name || "User"} className="w-8 h-8 rounded-full" />
-                ) : (
+            ) : (
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white text-xs font-bold">
-                    {session?.user?.name?.[0] || "U"}
-                  </div>
-                )}
+                {session?.user?.name?.[0] || "U"}
+              </div>
+            )}
                 <ChevronDown className="w-4 h-4 text-[#64748B]" />
               </button>
             </div>
@@ -780,14 +1054,10 @@ export default function ChatApp() {
             <div className="px-5 py-4 border-b border-[#E1E5E9] flex items-center justify-between">
               <h2 className="text-lg font-bold text-[#111827]">All Messages</h2>
               <button
-                onClick={() => {
-                  // Handle new message
-                  console.log("New message clicked")
-                  // You can add logic to open a new message dialog
-                }}
-                className="bg-[#10B981] hover:bg-[#059669] active:bg-[#047857] text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors active:scale-95"
+                onClick={() => setShowNewMessageModal(true)}
+                className="bg-[#10B981] hover:bg-[#059669] active:bg-[#047857] text-white px-2.5 py-1 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors active:scale-95"
               >
-                <span className="text-lg">+</span>
+                <span className="text-sm leading-none">+</span>
                 New Message
               </button>
             </div>
@@ -816,31 +1086,134 @@ export default function ChatApp() {
             </div>
 
             {/* Conversation List */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="conversation-list-container flex-1 overflow-y-auto overflow-x-visible relative">
               {sortedUsers.map((user) => (
                 <ConversationItem
-                  key={user.id}
+              key={user.id}
                   user={user}
                   isSelected={selectedUser?.id === user.id}
-                  onClick={() => setSelectedUser(user)}
+              onClick={() => setSelectedUser(user)}
+                  onRightClick={handleRightClick}
                   currentUserId={session?.user?.id}
                 />
               ))}
+              
+              {/* Context Menu */}
+              {contextMenu && (
+                <ContextMenu
+                  user={contextMenu.user}
+                  position={contextMenu.position}
+                  onClose={() => setContextMenu(null)}
+                  onMarkAsUnread={handleMarkAsUnread}
+                  onArchive={handleArchive}
+                  onMute={handleMute}
+                  onContactInfo={handleContactInfo}
+                  onExportChat={handleExportChat}
+                  onClearChat={handleClearChat}
+                  onDeleteChat={handleDeleteChat}
+                />
+              )}
             </div>
-          </div>
+
+            {/* New Message Modal */}
+            {showNewMessageModal && (
+              <div className="absolute top-16 right-0 w-[280px] h-[360px] bg-white rounded-lg shadow-2xl border border-[#E1E5E9] z-50 flex flex-col overflow-hidden">
+                {/* Modal Header */}
+                <div className="px-3 py-2 border-b border-[#E1E5E9] flex items-center justify-between flex-shrink-0">
+                  <h2 className="text-xs font-semibold text-[#111827]">New Message</h2>
+                  <button
+                    onClick={() => {
+                      setShowNewMessageModal(false)
+                      setNewMessageSearch("")
+                    }}
+                    className="w-5 h-5 rounded-full hover:bg-[#F5F5F5] flex items-center justify-center transition-colors"
+                  >
+                    <span className="text-sm text-[#64748B] leading-none">×</span>
+                  </button>
+                </div>
+
+                {/* Search Bar */}
+                <div className="px-3 py-1.5 border-b border-[#E1E5E9] flex-shrink-0">
+              <div className="relative">
+                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-[#64748B]" />
+                    <input
+                      type="text"
+                      placeholder="Search name or email"
+                      value={newMessageSearch}
+                      onChange={(e) => setNewMessageSearch(e.target.value)}
+                      className="w-full pl-7 pr-2 py-1 bg-[#F8F9FA] border border-[#E1E5E9] rounded-lg text-[10px] focus:outline-none focus:ring-1 focus:ring-[#10B981] focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* User List */}
+                <div className="flex-1 overflow-y-auto min-h-0">
+                  {filteredUsersForNewMessage.length > 0 ? (
+                    filteredUsersForNewMessage.map((user) => (
+                      <div
+                        key={user.id}
+                        onClick={() => {
+                          setSelectedUser(user)
+                          setShowNewMessageModal(false)
+                          setNewMessageSearch("")
+                        }}
+                        className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[#F5F5F5] transition-colors"
+                      >
+                        {/* Profile Picture */}
+                        <div className="relative flex-shrink-0">
+                          {user.image ? (
+                            <img 
+                              src={user.image} 
+                              alt={user.name!} 
+                              className="w-7 h-7 rounded-full object-cover ring-1 ring-[#E2E8F0]" 
+                            />
+                          ) : (
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white text-[10px] font-semibold ring-1 ring-[#E2E8F0]">
+                              {user.name?.[0]?.toUpperCase() || "U"}
+                  </div>
+                )}
+                          {user.online && (
+                            <div className="absolute bottom-0 right-0 w-2 h-2 bg-[#10B981] rounded-full border border-white"></div>
+                          )}
+              </div>
+                        
+                        {/* User Info */}
+              <div className="flex-1 min-w-0">
+                          <p className="font-medium text-[11px] text-[#111827] truncate">
+                            {user.name}
+                          </p>
+                          {user.email && (
+                            <p className="text-[9px] text-[#64748B] truncate">
+                              {user.email}
+                            </p>
+                          )}
+              </div>
+            </div>
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-center py-6">
+                      <p className="text-[#64748B] text-[10px]">
+                        {newMessageSearch.trim() ? "No users found" : "No users available"}
+                      </p>
+                    </div>
+          )}
+        </div>
+              </div>
+          )}
+      </div>
 
           {/* Main Chat Area - Figma Design */}
           <div className="flex-1 flex flex-col bg-[#f3f3ee] relative min-h-0">
-            {selectedUser ? (
-              <>
+        {selectedUser ? (
+          <>
                 {/* Chat Header */}
                 <div className="px-6 py-4 bg-white border-b border-[#E1E5E9] flex items-center justify-between rounded-t-lg">
                   <div className="flex items-center gap-3">
-                    {selectedUser.id === 'ai-assistant' ? (
+                {selectedUser.id === 'ai-assistant' ? (
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8B5CF6] to-[#A78BFA] flex items-center justify-center text-white">
                         <Bot className="w-5 h-5" />
-                      </div>
-                    ) : selectedUser.image ? (
+                  </div>
+                ) : selectedUser.image ? (
                       <img
                         src={selectedUser.image}
                         alt={selectedUser.name!}
@@ -849,9 +1222,9 @@ export default function ChatApp() {
                     ) : (
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white text-sm font-bold ring-2 ring-[#E2E8F0]">
                         {selectedUser.name?.[0]?.toUpperCase() || "U"}
-                      </div>
-                    )}
-                    <div>
+                  </div>
+                )}
+                <div>
                       <h3 className="font-semibold text-[15px] text-[#111827]">
                         {selectedUser.name}
                       </h3>
@@ -867,9 +1240,9 @@ export default function ChatApp() {
                         ) : (
                           <span>Offline</span>
                         )}
-                      </p>
-                    </div>
-                  </div>
+                  </p>
+                </div>
+              </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => {
@@ -908,7 +1281,7 @@ export default function ChatApp() {
                       <MoreVertical className="w-4 h-4 text-[#64748B]" />
                     </button>
                   </div>
-                </div>
+            </div>
 
                 {/* Messages Area */}
                 <div className="flex-1 overflow-y-auto px-6 py-6 space-y-1 bg-[#f3f3ee] min-h-0">
@@ -931,12 +1304,12 @@ export default function ChatApp() {
                       )}
 
                       {messages.map((msg) => {
-                        const isMe = msg.senderId === session?.user?.id
+                const isMe = msg.senderId === session?.user?.id
 
                         if (msg.type === 'poll' && msg.metadata) {
                           try {
                             const pollData = JSON.parse(msg.metadata)
-                            return (
+                return (
                               <div key={msg.id} className={cn("flex", isMe ? "justify-end" : "justify-start")}>
                                 <PollMessage
                                   messageId={msg.id}
@@ -944,7 +1317,7 @@ export default function ChatApp() {
                                   options={pollData.options}
                                   currentUserId={session?.user?.id || ''}
                                 />
-                              </div>
+                    </div>
                             )
                           } catch (e) {
                             // Fallback
@@ -966,14 +1339,14 @@ export default function ChatApp() {
                                 />
                               </div>
                             )}
-                          </div>
-                        )
-                      })}
+                  </div>
+                )
+              })}
                       {isAiTyping && <TypingIndicator />}
                       <div ref={messagesEndRef} />
                     </>
                   )}
-                </div>
+                    </div>
 
                 {/* Input Area */}
                 <div className="px-6 py-4 bg-[#F8F9FA] border-t border-[#E1E5E9]">
@@ -996,8 +1369,8 @@ export default function ChatApp() {
                         }}
                         onCancel={() => setShowPollCreator(false)}
                       />
-                    </div>
-                  )}
+                </div>
+              )}
 
                   {aiCoPilotEnabled && selectedUser && (
                     <AICoPilot
@@ -1011,17 +1384,17 @@ export default function ChatApp() {
                     />
                   )}
 
-                  <form
-                    className="flex items-center w-full mt-auto mb-4"
-                    onSubmit={(e) => { e.preventDefault(); sendMessage() }}
-                  >
+              <form
+                    className="flex items-center gap-2 w-full mt-auto mb-4"
+                onSubmit={(e) => { e.preventDefault(); sendMessage() }}
+              >
                     <div className="flex-1 relative">
-                      <input
+                <input
                         ref={inputRef}
-                        className="w-full bg-white border border-[#E1E5E9] rounded-[24px] pl-5 pr-24 py-3 text-[14px] text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent placeholder:text-[#94A3B8] shadow-sm"
+                        className="w-full bg-white border border-[#E1E5E9] rounded-[24px] pl-5 pr-5 py-3 text-[14px] text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent placeholder:text-[#94A3B8] shadow-sm"
                         placeholder="Type any message"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault()
@@ -1029,7 +1402,8 @@ export default function ChatApp() {
                           }
                         }}
                       />
-                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+                    </div>
+                    <div className="flex items-center gap-1">
                         <button
                           type="button"
                           onClick={() => {
@@ -1076,15 +1450,14 @@ export default function ChatApp() {
                           <Smile className="w-4 h-4 text-[#64748B]" />
                         </button>
                         <button
-                          type="submit"
-                          disabled={!input.trim()}
+                  type="submit"
+                  disabled={!input.trim()}
                           className="w-8 h-8 rounded-full bg-[#10B981] hover:bg-[#059669] active:bg-[#047857] text-white flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
-                        >
+                >
                           <Send className="w-4 h-4" />
                         </button>
                       </div>
-                    </div>
-                  </form>
+              </form>
 
                   {selectedUser && selectedUser.id !== 'ai-assistant' && (
                     <div className="flex items-center justify-center mt-2">
@@ -1102,21 +1475,21 @@ export default function ChatApp() {
                       </button>
                     </div>
                   )}
-                </div>
-              </>
-            ) : (
+            </div>
+          </>
+        ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-[#64748B]">
                 <div className="w-24 h-24 bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] rounded-full flex items-center justify-center mb-5">
                   <Bot className="w-12 h-12 text-white" />
-                </div>
+            </div>
                 <h3 className="text-xl font-semibold text-[#111827] mb-2">
                   Welcome to Chat App
                 </h3>
                 <p className="max-w-sm text-center text-sm text-[#64748B]">
                   Select a user from the sidebar to start a conversation or chat with our AI assistant!
                 </p>
-              </div>
-            )}
+          </div>
+        )}
 
             {/* Contact Info Panel - Figma Design */}
             {showContactInfo && selectedUser && (
@@ -1175,7 +1548,7 @@ export default function ChatApp() {
                     No media shared yet
                   </div>
                 </div>
-              </div>
+            </div>
             )}
           </div>
         </div>

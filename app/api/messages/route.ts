@@ -33,9 +33,27 @@ export async function GET(request: Request) {
             orderBy: {
                 createdAt: 'asc'
             },
-            include: {
-                sender: true,
-                receiver: true
+            select: {
+                id: true,
+                content: true,
+                isRead: true,
+                createdAt: true,
+                sender: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true
+                    }
+                },
+                receiver: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true
+                    }
+                }
             }
         });
 
