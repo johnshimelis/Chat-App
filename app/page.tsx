@@ -44,7 +44,9 @@ interface LeftNavBarProps {
 interface ConversationItemProps {
   user: User
   isSelected: boolean
+  isArchiving?: boolean
   onClick: () => void
+  onArchive?: () => void
   onRightClick: (e: React.MouseEvent, user: User) => void
   currentUserId?: string
 }
@@ -187,7 +189,7 @@ function ContextMenuComponent(props: ContextMenuProps) {
       if (!canClose) return
       // Don't close on right-click events
       if (e.button === 2) return
-      
+
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         onClose()
       }
@@ -216,94 +218,101 @@ function ContextMenuComponent(props: ContextMenuProps) {
   return (
     <div
       ref={menuRef}
-      className="context-menu absolute bg-white shadow-lg border border-[#E1E5E9] rounded-lg z-[200] min-w-[200px] py-1"
+      className="context-menu fixed bg-white shadow-lg border border-[#E1E5E9] rounded-lg z-[9999] w-[160px] py-0.5"
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
       }}
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.stopPropagation()
+        e.preventDefault()
+      }}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+      }}
     >
       <button
         onClick={() => {
           onMarkAsUnread()
           onClose()
         }}
-        className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-[#F5F5F5] transition-colors text-left"
+        className="w-full flex items-center justify-between px-2.5 py-0.5 hover:bg-[#F5F5F5] transition-colors text-left"
       >
-        <div className="flex items-center gap-3">
-          <MessageCircle className="w-4 h-4 text-[#64748B]" />
-          <span className="text-[13px] text-[#111827]">Mark as unread</span>
+        <div className="flex items-center gap-1.5">
+          <MessageCircle className="w-3 h-3 text-[#64748B]" />
+          <span className="text-[11px] text-[#111827]">Mark as unread</span>
         </div>
-        <Check className="w-4 h-4 text-[#64748B]" />
+        <Check className="w-3 h-3 text-[#64748B]" />
       </button>
-      
+
       <button
         onClick={() => {
           onArchive()
           onClose()
         }}
-        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#F5F5F5] transition-colors text-left"
+        className="w-full flex items-center gap-1.5 px-2.5 py-0.5 hover:bg-[#F5F5F5] transition-colors text-left"
       >
-        <Archive className="w-4 h-4 text-[#64748B]" />
-        <span className="text-[13px] text-[#111827]">Archive</span>
+        <Archive className="w-3 h-3 text-[#64748B]" />
+        <span className="text-[11px] text-[#111827]">Archive</span>
       </button>
-      
+
       <button
         onClick={() => {
           onMute()
           onClose()
         }}
-        className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-[#F5F5F5] transition-colors text-left"
+        className="w-full flex items-center justify-between px-2.5 py-0.5 hover:bg-[#F5F5F5] transition-colors text-left"
       >
-        <div className="flex items-center gap-3">
-          <VolumeX className="w-4 h-4 text-[#64748B]" />
-          <span className="text-[13px] text-[#111827]">Mute</span>
+        <div className="flex items-center gap-1.5">
+          <VolumeX className="w-3 h-3 text-[#64748B]" />
+          <span className="text-[11px] text-[#111827]">Mute</span>
         </div>
-        <ChevronRight className="w-4 h-4 text-[#64748B]" />
+        <ChevronRight className="w-3 h-3 text-[#64748B]" />
       </button>
-      
+
       <button
         onClick={() => {
           onContactInfo()
           onClose()
         }}
-        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#F5F5F5] transition-colors text-left"
+        className="w-full flex items-center gap-1.5 px-2.5 py-0.5 hover:bg-[#F5F5F5] transition-colors text-left"
       >
-        <UserIcon className="w-4 h-4 text-[#64748B]" />
-        <span className="text-[13px] text-[#111827]">Contact info</span>
+        <UserIcon className="w-3 h-3 text-[#64748B]" />
+        <span className="text-[11px] text-[#111827]">Contact info</span>
       </button>
-      
+
       <button
         onClick={() => {
           onExportChat()
           onClose()
         }}
-        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#F5F5F5] transition-colors text-left"
+        className="w-full flex items-center gap-1.5 px-2.5 py-0.5 hover:bg-[#F5F5F5] transition-colors text-left"
       >
-        <Upload className="w-4 h-4 text-[#64748B]" />
-        <span className="text-[13px] text-[#111827]">Export chat</span>
+        <Upload className="w-3 h-3 text-[#64748B]" />
+        <span className="text-[11px] text-[#111827]">Export chat</span>
       </button>
-      
+
       <button
         onClick={() => {
           onClearChat()
           onClose()
         }}
-        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#F5F5F5] transition-colors text-left"
+        className="w-full flex items-center gap-1.5 px-2.5 py-0.5 hover:bg-[#F5F5F5] transition-colors text-left"
       >
-        <X className="w-4 h-4 text-[#64748B]" />
-        <span className="text-[13px] text-[#111827]">Clear chat</span>
+        <X className="w-3 h-3 text-[#64748B]" />
+        <span className="text-[11px] text-[#111827]">Clear chat</span>
       </button>
-      
+
       <button
         onClick={() => {
           onDeleteChat()
           onClose()
         }}
-        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#F5F5F5] transition-colors text-left"
+        className="w-full flex items-center gap-1.5 px-2.5 py-0.5 hover:bg-[#F5F5F5] transition-colors text-left"
       >
-        <Trash2 className="w-4 h-4 text-[#EF4444]" />
-        <span className="text-[13px] text-[#EF4444]">Delete chat</span>
+        <Trash2 className="w-3 h-3 text-[#EF4444]" />
+        <span className="text-[11px] text-[#EF4444]">Delete chat</span>
       </button>
     </div>
   )
@@ -339,7 +348,9 @@ function LeftNavBarComponent(props: LeftNavBarComponentProps) {
           onClick={() => onSectionChange("home")}
           className={cn(
             "w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer",
-            activeSection === "home" ? "bg-[#10B981] text-white" : "text-[#64748B] hover:bg-[#E2E8F0]"
+            activeSection === "home"
+              ? "bg-[#E7F7EF] border border-[#10B981] text-[#111827]"
+              : "text-[#111827] hover:bg-[#E2E8F0]"
           )}
         >
           <Home className="w-5 h-5" />
@@ -347,10 +358,10 @@ function LeftNavBarComponent(props: LeftNavBarComponentProps) {
         <button
           onClick={() => onSectionChange("messages")}
           className={cn(
-            "w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer border-2",
+            "w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer",
             activeSection === "messages"
-              ? "bg-[#10B981] text-white border-[#10B981]"
-              : "text-[#64748B] border-transparent hover:bg-[#E2E8F0]"
+              ? "bg-[#E7F7EF] border border-[#10B981] text-[#111827]"
+              : "text-[#111827] hover:bg-[#E2E8F0]"
           )}
         >
           <MessageCircle className="w-5 h-5" strokeWidth={2} />
@@ -359,7 +370,9 @@ function LeftNavBarComponent(props: LeftNavBarComponentProps) {
           onClick={() => onSectionChange("explore")}
           className={cn(
             "w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer",
-            activeSection === "explore" ? "bg-[#10B981] text-white" : "text-[#64748B] hover:bg-[#E2E8F0]"
+            activeSection === "explore"
+              ? "bg-[#E7F7EF] border border-[#10B981] text-[#111827]"
+              : "text-[#111827] hover:bg-[#E2E8F0]"
           )}
         >
           <Compass className="w-5 h-5" />
@@ -368,7 +381,9 @@ function LeftNavBarComponent(props: LeftNavBarComponentProps) {
           onClick={() => onSectionChange("files")}
           className={cn(
             "w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer",
-            activeSection === "files" ? "bg-[#10B981] text-white" : "text-[#64748B] hover:bg-[#E2E8F0]"
+            activeSection === "files"
+              ? "bg-[#E7F7EF] border border-[#10B981] text-[#111827]"
+              : "text-[#111827] hover:bg-[#E2E8F0]"
           )}
         >
           <Folder className="w-5 h-5" />
@@ -377,7 +392,9 @@ function LeftNavBarComponent(props: LeftNavBarComponentProps) {
           onClick={() => onSectionChange("gallery")}
           className={cn(
             "w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer",
-            activeSection === "gallery" ? "bg-[#10B981] text-white" : "text-[#64748B] hover:bg-[#E2E8F0]"
+            activeSection === "gallery"
+              ? "bg-[#E7F7EF] border border-[#10B981] text-[#111827]"
+              : "text-[#111827] hover:bg-[#E2E8F0]"
           )}
         >
           <ImageIcon className="w-5 h-5" />
@@ -392,8 +409,8 @@ function LeftNavBarComponent(props: LeftNavBarComponentProps) {
           className={cn(
             "w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer flex-shrink-0",
             activeSection === "favorites"
-              ? "bg-[#10B981] text-white"
-              : "text-[#64748B] hover:bg-[#E2E8F0]"
+              ? "bg-[#E7F7EF] border border-[#10B981] text-[#111827]"
+              : "text-[#111827] hover:bg-[#E2E8F0]"
           )}
         >
           <Star className="w-5 h-5" />
@@ -422,14 +439,14 @@ LeftNavBar.displayName = "LeftNavBar"
 
 // Conversation List Item - Figma Design
 function ConversationItemComponent(props: ConversationItemProps) {
-  const { user, isSelected, onClick, onRightClick, currentUserId } = props
+  const { user, isSelected, isArchiving, onClick, onArchive, onRightClick, currentUserId } = props
 
   const lastMessage = user.id === 'ai-assistant'
-    ? "Always here to help"
+    ? (user.lastMessage || "Always here to help")
     : (user.lastMessage || "No messages yet")
 
   const timeAgo = useMemo(() => {
-    if (user.id === 'ai-assistant' || !user.lastMessageTime) return ""
+    if (!user.lastMessageTime) return ""
     const now = new Date()
     const msgTime = new Date(user.lastMessageTime)
     const diffMs = now.getTime() - msgTime.getTime()
@@ -442,7 +459,7 @@ function ConversationItemComponent(props: ConversationItemProps) {
     if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
     if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
     return msgTime.toLocaleDateString()
-  }, [user.lastMessageTime, user.id])
+  }, [user.lastMessageTime])
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -450,67 +467,89 @@ function ConversationItemComponent(props: ConversationItemProps) {
     onRightClick(e, user)
   }
 
+  const showUnreadTag = (user.unreadCount ?? 0) > 0 && !isSelected
+
   return (
     <div
       onClick={onClick}
       onContextMenu={handleContextMenu}
       className={cn(
-        "flex items-center gap-3 px-4 py-3 cursor-pointer transition-all relative group rounded-lg mx-2 my-1",
+        "flex items-center gap-3 px-4 py-2 cursor-pointer transition-all relative group rounded-lg mx-2 my-0.5",
         isSelected
-          ? "bg-[#E8F5E9] border-l-4 border-[#10B981]"
+          ? "bg-[#F1F5F9] border-l-4 border-[#10B981]"
           : "hover:bg-[#F5F5F5]"
       )}
     >
+      {/* Unread Tag Overlay - Left Side */}
+      {showUnreadTag && (
+        <div className="bg-[#10B981] text-white flex flex-col items-center justify-center gap-1 min-w-[56px] h-[56px] rounded-lg -ml-2 mr-1 animate-in slide-in-from-left-10 duration-200 shadow-sm">
+          <MessageCircle className="w-5 h-5 text-white" />
+          <span className="text-[10px] font-semibold leading-none">Unread</span>
+        </div>
+      )}
+
       {/* Profile Picture */}
       <div className="relative flex-shrink-0">
         {user.id === 'ai-assistant' ? (
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#8B5CF6] to-[#A78BFA] flex items-center justify-center text-white">
-            <Bot className="w-6 h-6" />
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8B5CF6] to-[#A78BFA] flex items-center justify-center text-white">
+            <Bot className="w-5 h-5" />
           </div>
         ) : user.image ? (
           <img
             src={user.image}
             alt={user.name!}
-            className="w-12 h-12 rounded-full object-cover ring-2 ring-[#E2E8F0]"
+            className="w-10 h-10 rounded-full object-cover ring-2 ring-[#E2E8F0]"
           />
         ) : (
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white text-sm font-bold ring-2 ring-[#E2E8F0]">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white text-xs font-bold ring-2 ring-[#E2E8F0]">
             {user.name?.[0]?.toUpperCase() || "U"}
           </div>
         )}
         {/* Online Indicator */}
         {(user.online || user.id === 'ai-assistant') && (
-          <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#10B981] rounded-full border-2 border-white"></div>
-        )}
-        {/* Unread Badge */}
-        {isSelected && user.unreadCount && user.unreadCount > 0 && (
-          <div className="absolute -top-1 -left-1 bg-[#10B981] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-            Unread
-          </div>
+          <div className="absolute bottom-0 right-0 w-3 h-3 bg-[#10B981] rounded-full border-2 border-white"></div>
         )}
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-start mb-1">
-          <p className="font-semibold text-[14px] text-[#111827] truncate">
+      <div className={cn("flex-1 min-w-0 transition-all", isArchiving && "pr-4")}>
+        <div className="flex justify-between items-start mb-0.5">
+          <p className="font-semibold text-[13.5px] text-[#111827] truncate">
             {user.name}
           </p>
-          <span className="text-[11px] text-[#64748B] ml-2 whitespace-nowrap">
+          <span className="text-[10px] text-[#64748B] ml-2 whitespace-nowrap">
             {timeAgo}
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <p className="text-[13px] text-[#64748B] truncate flex-1">
+          <p className="text-[12px] text-[#64748B] truncate flex-1 leading-tight">
             {lastMessage}
           </p>
-          {timeAgo && user.lastMessageTime && (
+          {(user.unreadCount ?? 0) > 0 && !isSelected ? (
+            <div className="bg-[#EF4444] text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center px-1 rounded-full ml-2 shadow-sm animate-in fade-in zoom-in duration-300">
+              {user.unreadCount}
+            </div>
+          ) : (
             <div className="flex items-center gap-1.5 ml-2">
               <CheckCheck className="w-3.5 h-3.5 text-[#10B981]" />
             </div>
           )}
         </div>
       </div>
+
+      {/* Archive Button Overlay */}
+      {isArchiving && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onArchive?.()
+          }}
+          className="bg-[#10B981] hover:bg-[#059669] text-white flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg ml-2 animate-in slide-in-from-right-10 duration-200"
+        >
+          <Archive className="w-5 h-5 text-white" />
+          <span className="text-[10px] font-semibold leading-none">Archive</span>
+        </button>
+      )}
     </div>
   )
 }
@@ -527,39 +566,39 @@ function MessageBubbleComponent(props: MessageBubbleProps) {
   )
 
   return (
-    <div className={cn("flex gap-2 mb-2", isMe ? "justify-end" : "justify-start")}>
-      {!isMe && (
-        <div className="w-8 h-8 rounded-full flex-shrink-0 overflow-hidden ring-1 ring-[#E2E8F0]">
-          {userImage ? (
-            <img src={userImage} alt="" className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full bg-[#E2E8F0] flex items-center justify-center">
-              <UserIcon className="w-4 h-4 text-[#64748B]" />
-            </div>
-          )}
-        </div>
-      )}
-      <div className={cn(
-        "max-w-[70%] rounded-2xl px-4 py-2.5 transition-all",
-        isMe
-          ? "bg-[#10B981] text-white rounded-br-sm"
-          : "bg-white text-[#111827] rounded-bl-sm"
-      )}>
-        <p className="text-[14px] leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
+    <div className={cn("flex flex-col mb-4", isMe ? "items-end" : "items-start")}>
+      <div className={cn("flex gap-2", isMe ? "flex-row-reverse" : "flex-row")}>
+        {!isMe && (
+          <div className="w-8 h-8 rounded-full flex-shrink-0 overflow-hidden ring-1 ring-[#E2E8F0] mt-1">
+            {userImage ? (
+              <img src={userImage} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-[#E2E8F0] flex items-center justify-center">
+                <UserIcon className="w-4 h-4 text-[#64748B]" />
+              </div>
+            )}
+          </div>
+        )}
         <div className={cn(
-          "flex items-center gap-1.5 mt-1.5",
-          isMe ? "justify-end" : "justify-start"
+          "max-w-[420px] rounded-2xl px-4 py-2.5 shadow-sm transition-all",
+          isMe
+            ? "bg-[#E2F9E5] text-[#111827] rounded-tr-sm"
+            : "bg-white text-[#111827] rounded-tl-sm"
         )}>
-          <span className={cn(
-            "text-[11px]",
-            isMe ? "text-white/80" : "text-[#64748B]"
-          )}>
-            {time}
-          </span>
-          {isMe && (
-            <CheckCheck className="w-3.5 h-3.5 text-white/80 ml-0.5" />
-          )}
+          <p className="text-[14px] leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
         </div>
+      </div>
+
+      <div className={cn(
+        "flex items-center gap-1.5 mt-1",
+        isMe ? "justify-end mr-1" : "justify-start ml-10"
+      )}>
+        <span className="text-[11px] text-[#64748B]">
+          {time}
+        </span>
+        {isMe && (
+          <CheckCheck className="w-3.5 h-3.5 text-[#10B981]" />
+        )}
       </div>
     </div>
   )
@@ -611,19 +650,27 @@ export default function ChatApp() {
   const [searchQuery, setSearchQuery] = useState("")
   const [topSearchQuery, setTopSearchQuery] = useState("")
   const [contextMenu, setContextMenu] = useState<{ user: User; position: { x: number; y: number } } | null>(null)
+  const [archivingUserId, setArchivingUserId] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<"media" | "link" | "docs">("media")
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const selectedUserRef = useRef<User | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const loadedUsersRef = useRef<Set<string>>(new Set())
 
   useEffect(() => {
+    const prevUserId = selectedUserRef.current?.id
     selectedUserRef.current = selectedUser
+    // Clear loaded cache when switching to a different user
+    if (selectedUser && prevUserId && prevUserId !== selectedUser.id) {
+      // Keep messages loaded, just switch the view
+    }
   }, [selectedUser])
 
   // Close dropdown when clicking outside
   useEffect(() => {
     if (!showUserDropdown) return
-    
+
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Node
       // Don't close if clicking the logo button
@@ -636,12 +683,12 @@ export default function ChatApp() {
         setShowUserDropdown(false)
       }
     }
-    
+
     // Use setTimeout to avoid immediate closure
     const timeoutId = setTimeout(() => {
       document.addEventListener('mousedown', handleClickOutside)
     }, 100)
-    
+
     return () => {
       clearTimeout(timeoutId)
       document.removeEventListener('mousedown', handleClickOutside)
@@ -667,21 +714,122 @@ export default function ChatApp() {
         ))
       })
 
-      socketInstance.on("new_message", (msg: Message) => {
+      socketInstance.on("new_message", (msg: any) => {
+        // Format message from socket (may have sender/receiver objects)
+        const formattedMsg: Message = {
+          id: msg.id,
+          content: msg.content,
+          senderId: msg.sender?.id || msg.senderId,
+          receiverId: msg.receiver?.id || msg.receiverId,
+          createdAt: msg.createdAt,
+          type: msg.type,
+          metadata: msg.metadata
+        }
+
         setMessages((prev) => {
-          if (selectedUserRef.current?.id === msg.senderId) {
-            return [...prev, msg]
+          if (selectedUserRef.current?.id === formattedMsg.senderId) {
+            return [...prev, formattedMsg]
           }
           return prev
         })
 
-        if (selectedUserRef.current?.id !== msg.senderId) {
+        if (selectedUserRef.current?.id !== formattedMsg.senderId) {
+          // Move user to top (below AI assistant) when receiving new message
+          setUsers(prev => {
+            const updated = prev.map(u =>
+              u.id === formattedMsg.senderId
+                ? {
+                  ...u,
+                  unreadCount: (u.unreadCount || 0) + 1,
+                  lastMessage: formattedMsg.content,
+                  lastMessageTime: formattedMsg.createdAt
+                }
+                : u
+            )
+            // Find the user and move them to top (after AI assistant)
+            const userIndex = updated.findIndex(u => u.id === formattedMsg.senderId)
+            if (userIndex > 0) { // Only move if not already at top (AI assistant is at index 0)
+              const [user] = updated.splice(userIndex, 1)
+              // Insert after AI assistant (at index 1)
+              updated.splice(1, 0, user)
+            }
+            return updated
+          })
+        } else {
+          // Update last message even if conversation is open
           setUsers(prev => prev.map(u =>
-            u.id === msg.senderId
-              ? { ...u, unreadCount: (u.unreadCount || 0) + 1 }
+            u.id === formattedMsg.senderId
+              ? {
+                ...u,
+                lastMessage: formattedMsg.content,
+                lastMessageTime: formattedMsg.createdAt
+              }
               : u
           ))
         }
+      })
+
+      socketInstance.on("message_sent", (msg: any) => {
+        // Replace temp message with real one from server
+        const formattedMsg: Message = {
+          id: msg.id,
+          content: msg.content,
+          senderId: msg.sender?.id || msg.senderId,
+          receiverId: msg.receiver?.id || msg.receiverId,
+          createdAt: msg.createdAt,
+          type: msg.type,
+          metadata: msg.metadata
+        }
+
+        setMessages((prev) => {
+          // Remove temp message and add real one
+          const filtered = prev.filter(m => !m.id.startsWith('temp-'))
+          return [...filtered, formattedMsg]
+        })
+
+        // Update users list with last message and move to top (below AI assistant)
+        setUsers(prev => {
+          const updated = prev.map(u =>
+            u.id === formattedMsg.receiverId
+              ? {
+                ...u,
+                lastMessage: formattedMsg.content,
+                lastMessageTime: formattedMsg.createdAt
+              }
+              : u
+          )
+          // Find the user and move them to top (after AI assistant)
+          const userIndex = updated.findIndex(u => u.id === formattedMsg.receiverId)
+          if (userIndex > 0) { // Only move if not already at top (AI assistant is at index 0)
+            const [user] = updated.splice(userIndex, 1)
+            // Insert after AI assistant (at index 1)
+            updated.splice(1, 0, user)
+          }
+          return updated
+        })
+
+        // Refresh users to get updated unread counts (async to avoid dependency issues)
+        setTimeout(() => {
+          fetch("/api/users")
+            .then(res => res.json())
+            .then(data => {
+              // Filter out any existing AI assistant from API response to avoid duplicates
+              const filteredData = data.filter((user: User) => user.id !== 'ai-assistant')
+              // Add AI assistant at the top of the users list
+              const aiUser: User = {
+                id: "ai-assistant",
+                name: "AI Assistant",
+                image: null,
+                email: "ai@bot",
+                online: true,
+                unreadCount: 0,
+                lastMessage: "Always here to help",
+                lastMessageTime: null
+              }
+              setUsers([aiUser, ...filteredData])
+            })
+            .catch(err => console.error("Failed to refresh users", err))
+        }, 100)
       })
 
       return () => {
@@ -691,25 +839,28 @@ export default function ChatApp() {
   }, [session])
 
   const fetchUsers = useCallback(async () => {
-      try {
-        const res = await fetch("/api/users")
-        if (res.ok) {
-          const data = await res.json()
-          const aiUser: User = {
-            id: "ai-assistant",
-            name: "AI Assistant",
-            image: null,
-            email: "ai@bot",
-            online: true,
+    try {
+      const res = await fetch("/api/users")
+      if (res.ok) {
+        const data = await res.json()
+        // Filter out any existing AI assistant from API response to avoid duplicates
+        const filteredData = data.filter((user: User) => user.id !== 'ai-assistant')
+        // Add AI assistant at the top of the users list
+        const aiUser: User = {
+          id: "ai-assistant",
+          name: "AI Assistant",
+          image: null,
+          email: "ai@bot",
+          online: true,
           unreadCount: 0,
           lastMessage: "Always here to help",
           lastMessageTime: null
-          }
-          setUsers([aiUser, ...data])
         }
-      } catch (err) {
-        console.error("Failed to load users", err)
+        setUsers([aiUser, ...filteredData])
       }
+    } catch (err) {
+      console.error("Failed to load users", err)
+    }
   }, [])
 
   useEffect(() => {
@@ -719,12 +870,20 @@ export default function ChatApp() {
   useEffect(() => {
     if (!selectedUser || !session?.user?.id) return
 
-    if (selectedUser.id === "ai-assistant") {
-      setMessages([])
+    const userId = selectedUser.id
+    const prevUserId = selectedUserRef.current?.id
+
+    // Only fetch if this is a different user than before
+    if (prevUserId === userId && loadedUsersRef.current.has(userId)) {
+      // Same user, messages already loaded - just mark as read
+      setUsers(prev => prev.map(u =>
+        u.id === selectedUser.id ? { ...u, unreadCount: 0 } : u
+      ))
       return
     }
 
     setIsLoading(true)
+    // Mark messages as read and reset unread count
     setUsers(prev => prev.map(u =>
       u.id === selectedUser.id ? { ...u, unreadCount: 0 } : u
     ))
@@ -734,7 +893,19 @@ export default function ChatApp() {
         const res = await fetch(`/api/messages?userId=${selectedUser.id}`)
         if (res.ok) {
           const data = await res.json()
-          setMessages(data)
+          // Convert API response format to Message type (sender/receiver objects to senderId/receiverId)
+          const formattedMessages: Message[] = data.map((msg: any) => ({
+            id: msg.id,
+            content: msg.content,
+            senderId: msg.sender?.id || msg.senderId,
+            receiverId: msg.receiver?.id || msg.receiverId,
+            createdAt: msg.createdAt,
+            type: msg.type,
+            metadata: msg.metadata
+          }))
+          setMessages(formattedMessages)
+          // Mark this user's messages as loaded
+          loadedUsersRef.current.add(userId)
         }
       } catch (err) {
         console.error("Failed to load messages", err)
@@ -743,7 +914,7 @@ export default function ChatApp() {
       }
     }
     fetchMessages()
-  }, [selectedUser, session])
+  }, [selectedUser?.id, session?.user?.id]) // Only depend on IDs, not full objects
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -773,7 +944,10 @@ export default function ChatApp() {
         const res = await fetch("/api/chat/ai", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: newMessage.content })
+          body: JSON.stringify({
+            message: newMessage.content,
+            userId: session.user.id
+          })
         })
 
         let data
@@ -791,14 +965,48 @@ export default function ChatApp() {
 
         setMessages((prev) => {
           const filtered = prev.filter(m => m.id !== tempId)
-          return [...filtered, {
-          id: Date.now().toString(),
+          const aiResponse: Message = {
+            id: Date.now().toString(),
             content: responseContent,
-          senderId: "ai-assistant",
-          receiverId: session.user.id,
-          createdAt: new Date().toISOString()
-          }]
+            senderId: "ai-assistant",
+            receiverId: session.user.id,
+            createdAt: new Date().toISOString()
+          }
+          // Update users list with last message from AI
+          setUsers(prev => prev.map(u =>
+            u.id === "ai-assistant"
+              ? {
+                ...u,
+                lastMessage: responseContent,
+                lastMessageTime: new Date().toISOString()
+              }
+              : u
+          ))
+          return [...filtered, aiResponse]
         })
+
+        // Refresh users to get updated data (async to avoid dependency issues)
+        setTimeout(() => {
+          fetch("/api/users")
+            .then(res => res.json())
+            .then(data => {
+              // Filter out any existing AI assistant from API response to avoid duplicates
+              const filteredData = data.filter((user: User) => user.id !== 'ai-assistant')
+              // Add AI assistant at the top of the users list
+              const aiUser: User = {
+                id: "ai-assistant",
+                name: "AI Assistant",
+                image: null,
+                email: "ai@bot",
+                online: true,
+                unreadCount: 0,
+                lastMessage: "Always here to help",
+                lastMessageTime: null
+              }
+              setUsers([aiUser, ...filteredData])
+            })
+            .catch(err => console.error("Failed to refresh users", err))
+        }, 100)
       } catch (e) {
         setMessages((prev) => {
           const filtered = prev.filter(m => m.id !== tempId)
@@ -816,7 +1024,19 @@ export default function ChatApp() {
       return
     }
 
-    if (socket) socket.emit("send_message", newMessage)
+    if (socket) {
+      socket.emit("send_message", newMessage)
+      // Update users list with last message immediately
+      setUsers(prev => prev.map(u =>
+        u.id === selectedUser.id
+          ? {
+            ...u,
+            lastMessage: newMessage.content,
+            lastMessageTime: newMessage.createdAt
+          }
+          : u
+      ))
+    }
   }, [input, selectedUser, session, socket])
 
   const sortedUsers = useMemo(() => {
@@ -831,9 +1051,16 @@ export default function ChatApp() {
       )
     }
 
-    // Sort users
+    // Sort users - AI assistant always first, then by online status, then by unread count
     return filtered.sort((a, b) => {
+      // AI assistant always at the top
+      if (a.id === 'ai-assistant') return -1
+      if (b.id === 'ai-assistant') return 1
+
+      // Then sort by online status
       if (a.online !== b.online) return a.online ? -1 : 1
+
+      // Then by unread count
       if ((a.unreadCount || 0) !== (b.unreadCount || 0)) {
         return (b.unreadCount || 0) - (a.unreadCount || 0)
       }
@@ -843,52 +1070,40 @@ export default function ChatApp() {
 
   const filteredUsersForNewMessage = useMemo(() => {
     if (!users.length) return []
-    
+
     // Filter out the current user and AI assistant
-    const availableUsers = users.filter(user => 
+    const availableUsers = users.filter(user =>
       user.id !== session?.user?.id && user.id !== 'ai-assistant'
     )
-    
+
     if (newMessageSearch.trim()) {
       return availableUsers.filter(user =>
         user.name?.toLowerCase().includes(newMessageSearch.toLowerCase()) ||
         user.email?.toLowerCase().includes(newMessageSearch.toLowerCase())
       )
     }
-    
+
     return availableUsers
   }, [users, newMessageSearch, session?.user?.id])
 
   const handleRightClick = useCallback((e: React.MouseEvent, user: User) => {
     e.preventDefault()
     e.stopPropagation()
-    
+
     const target = e.currentTarget as HTMLElement
-    const conversationListElement = target.closest('.conversation-list-container')
-    
-    if (conversationListElement) {
-      const itemRect = target.getBoundingClientRect()
-      const containerRect = conversationListElement.getBoundingClientRect()
-      
-      // Position menu to the right of the item, aligned with the top
-      const position = {
-        x: itemRect.right - containerRect.left + 8, // 8px gap to the right
-        y: itemRect.top - containerRect.top
-      }
-      
-      setContextMenu({
-        user,
-        position
-      })
-    } else {
-      setContextMenu({
-        user,
-        position: {
-          x: e.clientX,
-          y: e.clientY
-        }
-      })
+    const itemRect = target.getBoundingClientRect()
+
+    // Use viewport coordinates for fixed positioning
+    // Position menu to the right of the item, moved more to the right and bottom
+    const position = {
+      x: itemRect.right - 120, // Position to the right, moved more to the right
+      y: itemRect.top + 8 // Top of the item, moved a bit down
     }
+
+    setContextMenu({
+      user,
+      position
+    })
   }, [])
 
   const handleMarkAsUnread = useCallback(() => {
@@ -900,6 +1115,9 @@ export default function ChatApp() {
   }, [contextMenu])
 
   const handleArchive = useCallback(() => {
+    if (contextMenu) {
+      setArchivingUserId(contextMenu.user.id)
+    }
     console.log("Archive chat:", contextMenu?.user.name)
   }, [contextMenu])
 
@@ -932,7 +1150,7 @@ export default function ChatApp() {
   }, [contextMenu, selectedUser])
 
   if (status === "loading") {
-  return (
+    return (
       <div className="flex h-screen items-center justify-center bg-[#F8F9FA]">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -979,14 +1197,185 @@ export default function ChatApp() {
       </div>
 
       {/* Middle and Right Panels Container */}
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1 overflow-hidden min-h-0 relative">
+        {/* Contact Info Panel - Overlay Everything on the right */}
+        {showContactInfo && selectedUser && (
+          <div className="absolute right-4 top-4 bottom-4 w-[340px] bg-white border border-[#E1E5E9] shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300 font-sans overflow-hidden rounded-2xl">
+            <div className="p-4 flex items-center justify-between flex-shrink-0 border-b border-[#F1F5F9] h-[56px]">
+              <h3 className="font-bold text-[16px] text-[#111827]">Contact Info</h3>
+              <button
+                onClick={() => setShowContactInfo(false)}
+                className="w-7 h-7 rounded-full hover:bg-[#F5F5F5] flex items-center justify-center transition-colors group"
+              >
+                <X className="w-4 h-4 text-[#64748B] group-hover:text-[#111827]" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto custom-scrollbar px-4 pb-4">
+              {/* Profile Section */}
+              <div className="flex flex-col items-center mb-6 pt-4">
+                <div className="relative mb-3">
+                  {selectedUser.image ? (
+                    <img
+                      src={selectedUser.image}
+                      alt={selectedUser.name!}
+                      className="w-20 h-20 rounded-full object-cover ring-4 ring-[#F8FAFC]"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white text-2xl font-bold ring-4 ring-[#F8FAFC]">
+                      {selectedUser.name?.[0]?.toUpperCase() || "U"}
+                    </div>
+                  )}
+                  {selectedUser.online && (
+                    <div className="absolute bottom-0.5 right-0.5 w-4 h-4 bg-[#10B981] rounded-full border-[3px] border-white"></div>
+                  )}
+                </div>
+                <h4 className="font-bold text-[17px] text-[#111827] mb-0.5">
+                  {selectedUser.name}
+                </h4>
+                <p className="text-[12px] text-[#64748B]">
+                  {selectedUser.email || "No email provided"}
+                </p>
+              </div>
+
+              {/* Quick Action Buttons */}
+              <div className="flex gap-3 mb-6">
+                <button className="flex-1 bg-white border border-[#E2E8F0] hover:bg-[#F8F9FA] py-2 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm text-[#111827] ring-1 ring-inset ring-[#E2E8F0]">
+                  <Phone className="w-3.5 h-3.5 text-[#10B981]" />
+                  <span className="text-[13px] font-semibold">Audio</span>
+                </button>
+                <button className="flex-1 bg-white border border-[#E2E8F0] hover:bg-[#F8F9FA] py-2 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm text-[#111827] ring-1 ring-inset ring-[#E2E8F0]">
+                  <Video className="w-3.5 h-3.5 text-[#10B981]" />
+                  <span className="text-[13px] font-semibold">Video</span>
+                </button>
+              </div>
+
+              {/* Tabs */}
+              <div className="flex bg-[#F1F5F9] p-0.5 rounded-xl mb-5">
+                {(["media", "link", "docs"] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={cn(
+                      "flex-1 py-1 text-[13px] font-semibold rounded-lg transition-all capitalize",
+                      activeTab === tab
+                        ? "bg-white text-[#111827] shadow-sm"
+                        : "text-[#64748B] hover:text-[#111827]"
+                    )}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
+              {/* Tab Content */}
+              <div className="space-y-5">
+                {activeTab === "media" && (
+                  <div className="space-y-5">
+                    {["May", "April", "March"].map((month) => (
+                      <div key={month}>
+                        <h5 className="text-[12px] font-bold text-[#64748B] mb-2 px-1">{month}</h5>
+                        <div className="grid grid-cols-4 gap-1.5">
+                          {Array.from({ length: month === "May" ? 8 : month === "April" ? 4 : 4 }).map((_, i) => (
+                            <div
+                              key={i}
+                              className="aspect-square bg-[#F1F5F9] rounded-lg overflow-hidden cursor-pointer hover:opacity-90 active:scale-95 transition-all group relative"
+                            >
+                              <img
+                                src={`https://picsum.photos/seed/${month}-${i}/150`}
+                                alt=""
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {activeTab === "link" && (
+                  <div className="space-y-5">
+                    {["May"].map((month) => (
+                      <div key={month}>
+                        <h5 className="text-[12px] font-bold text-[#64748B] mb-2 px-1">{month}</h5>
+                        <div className="space-y-1.5">
+                          {[
+                            { url: "https://basecamp.net/", title: "Basecamp", desc: "Discover thousands of premium UI kits, templates, and design..." },
+                            { url: "https://notion.com/", title: "Notion", desc: "A new tool that blends your everyday work apps into one. It's the..." },
+                            { url: "https://asana.com/", title: "Asana", desc: "Work anytime, anywhere with Asana. Keep remote and distributed..." },
+                            { url: "https://trello.com/", title: "Trello", desc: "Make the impossible, possible with Trello. The ultimate teamwork..." }
+                          ].map((link, i) => (
+                            <div
+                              key={i}
+                              className="flex items-center gap-2.5 p-2 rounded-xl border border-transparent hover:border-[#E2E8F0] hover:bg-[#F8F9FA] transition-all cursor-pointer group"
+                            >
+                              <div className="w-10 h-10 rounded-lg bg-[#111827] flex items-center justify-center flex-shrink-0 group-hover:opacity-90 shadow-sm overflow-hidden text-white font-bold text-[15px]">
+                                {i === 0 && "B"}
+                                {i === 1 && "N"}
+                                {i === 2 && "A"}
+                                {i === 3 && "T"}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[13px] font-bold text-[#111827] group-hover:text-[#10B981] transition-colors line-clamp-1">{link.url}</p>
+                                <p className="text-[10px] text-[#64748B] mt-0.5 leading-[1.3] line-clamp-1">{link.desc}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {activeTab === "docs" && (
+                  <div className="space-y-5">
+                    {["May"].map((month) => (
+                      <div key={month}>
+                        <h5 className="text-[12px] font-bold text-[#64748B] mb-2 px-1">{month}</h5>
+                        <div className="space-y-1.5">
+                          {[
+                            { name: "Document Requirement.pdf", info: "10 pages • 16 MB • pdf", type: "pdf" },
+                            { name: "User Flow.pdf", info: "7 pages • 32 MB • pdf", type: "pdf" },
+                            { name: "Existing App.fig", info: "213 MB • fig", type: "fig" },
+                            { name: "Product Illustrations.ai", info: "72 MB • ai", type: "ai" },
+                            { name: "Quotation.pdf", info: "2 pages • 329 KB • pdf", type: "pdf" }
+                          ].map((doc, i) => (
+                            <div
+                              key={i}
+                              className="flex items-center gap-2.5 p-2 rounded-xl border border-transparent hover:border-[#E2E8F0] hover:bg-[#F8F9FA] transition-all cursor-pointer group"
+                            >
+                              <div className={cn(
+                                "w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-white border border-transparent group-hover:border-[#E2E8F0] shadow-sm",
+                                doc.type === "pdf" ? "bg-[#FFF1F2]" : doc.type === "fig" ? "bg-[#F5F3FF]" : "bg-[#FFF7ED]"
+                              )}>
+                                {doc.type === "pdf" && <Folder className="w-5 h-5 text-[#EF4444]" />}
+                                {doc.type === "fig" && <Folder className="w-5 h-5 text-[#8B5CF6]" />}
+                                {doc.type === "ai" && <Folder className="w-5 h-5 text-[#F97316]" />}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[13px] font-bold text-[#111827] truncate group-hover:text-[#10B981] transition-colors">{doc.name}</p>
+                                <p className="text-[10px] text-[#94A3B8] mt-0.5 font-medium">{doc.info}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         {/* Top Header Bar - Only on middle and right panels */}
-        <div className="h-[56px] bg-white border-b border-[#E1E5E9] flex items-center justify-between px-4">
-          <div className="flex items-center gap-3">
+        <div className="h-[56px] bg-white border-b border-[#E1E5E9] flex items-center justify-between px-4 rounded-2xl mx-4 mt-4 flex-shrink-0">
+          <div className="flex items-center gap-3 px-2 py-1 rounded-lg">
             <div className="w-8 h-8 rounded-full bg-[#10B981] flex items-center justify-center">
               <MessageCircle className="w-5 h-5 text-white" strokeWidth={2} />
             </div>
-            <span className="text-[15px] font-medium text-[#111827]">All Messages</span>
+            <span className="text-[15px] font-medium text-[#111827]">Message</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -1034,24 +1423,24 @@ export default function ChatApp() {
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
                 className="flex items-center gap-2 hover:bg-[#F5F5F5] rounded-lg px-2 py-1.5 transition-colors"
               >
-            {session?.user?.image ? (
+                {session?.user?.image ? (
                   <img src={session.user.image} alt={session.user.name || "User"} className="w-8 h-8 rounded-full" />
-            ) : (
+                ) : (
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white text-xs font-bold">
-                {session?.user?.name?.[0] || "U"}
-              </div>
-            )}
+                    {session?.user?.name?.[0] || "U"}
+                  </div>
+                )}
                 <ChevronDown className="w-4 h-4 text-[#64748B]" />
               </button>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 overflow-hidden bg-[#f3f3ee] p-4 gap-0.5 min-h-0" style={{ display: 'flex', alignItems: 'stretch' }}>
           {/* Left Panel - Conversation List - Figma Design */}
-          <div className="w-[360px] bg-white border-r border-[#E1E5E9] flex flex-col relative">
+          <div className="w-[360px] bg-white rounded-2xl flex flex-col relative overflow-hidden shadow-sm flex-shrink-0" style={{ overflowX: 'visible', alignSelf: 'stretch' }}>
             {/* Header */}
-            <div className="px-5 py-4 border-b border-[#E1E5E9] flex items-center justify-between">
+            <div className="h-[56px] px-5 py-4 border-b border-[#E1E5E9] flex items-center justify-between">
               <h2 className="text-lg font-bold text-[#111827]">All Messages</h2>
               <button
                 onClick={() => setShowNewMessageModal(true)}
@@ -1064,21 +1453,23 @@ export default function ChatApp() {
 
             {/* Search Bar with Filter */}
             <div className="px-5 py-3 border-b border-[#E1E5E9]">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#64748B]" />
-                <input
-                  type="text"
-                  placeholder="Search in message"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-10 py-2.5 bg-[#F8F9FA] border border-[#E1E5E9] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
-                />
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#64748B]" />
+                  <input
+                    type="text"
+                    placeholder="Search in message"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full h-8 pl-10 pr-5 bg-[#F8F9FA] border border-[#E1E5E9] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
+                  />
+                </div>
                 <button
                   onClick={() => {
                     // Handle filter
                     console.log("Filter clicked")
                   }}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 hover:bg-[#F0F0F0] rounded p-1 transition-colors active:scale-95"
+                  className="w-8 h-8 bg-[#F8F9FA] hover:bg-[#F0F0F0] rounded-lg flex items-center justify-center transition-colors active:scale-95 border border-[#E1E5E9]"
                 >
                   <Filter className="w-4 h-4 text-[#64748B]" />
                 </button>
@@ -1086,18 +1477,27 @@ export default function ChatApp() {
             </div>
 
             {/* Conversation List */}
-            <div className="conversation-list-container flex-1 overflow-y-auto overflow-x-visible relative">
+            <div className="conversation-list-container flex-1 overflow-y-auto relative">
               {sortedUsers.map((user) => (
                 <ConversationItem
-              key={user.id}
+                  key={user.id}
                   user={user}
                   isSelected={selectedUser?.id === user.id}
-              onClick={() => setSelectedUser(user)}
+                  isArchiving={archivingUserId === user.id}
+                  onClick={() => {
+                    setSelectedUser(user)
+                    setArchivingUserId(null)
+                  }}
+                  onArchive={() => {
+                    setUsers(prev => prev.filter(u => u.id !== user.id))
+                    setArchivingUserId(null)
+                    if (selectedUser?.id === user.id) setSelectedUser(null)
+                  }}
                   onRightClick={handleRightClick}
                   currentUserId={session?.user?.id}
                 />
               ))}
-              
+
               {/* Context Menu */}
               {contextMenu && (
                 <ContextMenu
@@ -1134,7 +1534,7 @@ export default function ChatApp() {
 
                 {/* Search Bar */}
                 <div className="px-3 py-1.5 border-b border-[#E1E5E9] flex-shrink-0">
-              <div className="relative">
+                  <div className="relative">
                     <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-[#64748B]" />
                     <input
                       type="text"
@@ -1162,23 +1562,23 @@ export default function ChatApp() {
                         {/* Profile Picture */}
                         <div className="relative flex-shrink-0">
                           {user.image ? (
-                            <img 
-                              src={user.image} 
-                              alt={user.name!} 
-                              className="w-7 h-7 rounded-full object-cover ring-1 ring-[#E2E8F0]" 
+                            <img
+                              src={user.image}
+                              alt={user.name!}
+                              className="w-7 h-7 rounded-full object-cover ring-1 ring-[#E2E8F0]"
                             />
                           ) : (
                             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white text-[10px] font-semibold ring-1 ring-[#E2E8F0]">
                               {user.name?.[0]?.toUpperCase() || "U"}
-                  </div>
-                )}
+                            </div>
+                          )}
                           {user.online && (
                             <div className="absolute bottom-0 right-0 w-2 h-2 bg-[#10B981] rounded-full border border-white"></div>
                           )}
-              </div>
-                        
+                        </div>
+
                         {/* User Info */}
-              <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0">
                           <p className="font-medium text-[11px] text-[#111827] truncate">
                             {user.name}
                           </p>
@@ -1187,8 +1587,8 @@ export default function ChatApp() {
                               {user.email}
                             </p>
                           )}
-              </div>
-            </div>
+                        </div>
+                      </div>
                     ))
                   ) : (
                     <div className="flex items-center justify-center py-6">
@@ -1196,24 +1596,25 @@ export default function ChatApp() {
                         {newMessageSearch.trim() ? "No users found" : "No users available"}
                       </p>
                     </div>
-          )}
-        </div>
+                  )}
+                </div>
               </div>
-          )}
-      </div>
+            )}
+          </div>
 
           {/* Main Chat Area - Figma Design */}
-          <div className="flex-1 flex flex-col bg-[#f3f3ee] relative min-h-0">
-        {selectedUser ? (
-          <>
+          <div className="flex-1 flex flex-col bg-[#f3f3ee] relative pl-4 min-w-0 min-h-0" style={{ alignSelf: 'stretch' }}>
+            {selectedUser ? (
+              <div className="flex-1 flex flex-col bg-white rounded-2xl overflow-hidden min-h-0 relative">
+
                 {/* Chat Header */}
-                <div className="px-6 py-4 bg-white border-b border-[#E1E5E9] flex items-center justify-between rounded-t-lg">
+                <div className="h-[56px] px-6 py-4 flex items-center justify-between border-b border-[#F1F5F9] shrink-0">
                   <div className="flex items-center gap-3">
-                {selectedUser.id === 'ai-assistant' ? (
+                    {selectedUser.id === 'ai-assistant' ? (
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8B5CF6] to-[#A78BFA] flex items-center justify-center text-white">
                         <Bot className="w-5 h-5" />
-                  </div>
-                ) : selectedUser.image ? (
+                      </div>
+                    ) : selectedUser.image ? (
                       <img
                         src={selectedUser.image}
                         alt={selectedUser.name!}
@@ -1222,9 +1623,9 @@ export default function ChatApp() {
                     ) : (
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white text-sm font-bold ring-2 ring-[#E2E8F0]">
                         {selectedUser.name?.[0]?.toUpperCase() || "U"}
-                  </div>
-                )}
-                <div>
+                      </div>
+                    )}
+                    <div>
                       <h3 className="font-semibold text-[15px] text-[#111827]">
                         {selectedUser.name}
                       </h3>
@@ -1240,9 +1641,9 @@ export default function ChatApp() {
                         ) : (
                           <span>Offline</span>
                         )}
-                  </p>
-                </div>
-              </div>
+                      </p>
+                    </div>
+                  </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => {
@@ -1281,10 +1682,10 @@ export default function ChatApp() {
                       <MoreVertical className="w-4 h-4 text-[#64748B]" />
                     </button>
                   </div>
-            </div>
+                </div>
 
                 {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto px-6 py-6 space-y-1 bg-[#f3f3ee] min-h-0">
+                <div className="flex-1 overflow-y-auto px-6 py-6 space-y-1 bg-[#f3f3ee] min-h-0 rounded-2xl mx-4 my-1 mb-2">
                   {isLoading ? (
                     <div className="flex items-center justify-center h-full">
                       <div className="text-center">
@@ -1304,12 +1705,12 @@ export default function ChatApp() {
                       )}
 
                       {messages.map((msg) => {
-                const isMe = msg.senderId === session?.user?.id
+                        const isMe = msg.senderId === session?.user?.id
 
                         if (msg.type === 'poll' && msg.metadata) {
                           try {
                             const pollData = JSON.parse(msg.metadata)
-                return (
+                            return (
                               <div key={msg.id} className={cn("flex", isMe ? "justify-end" : "justify-start")}>
                                 <PollMessage
                                   messageId={msg.id}
@@ -1317,7 +1718,7 @@ export default function ChatApp() {
                                   options={pollData.options}
                                   currentUserId={session?.user?.id || ''}
                                 />
-                    </div>
+                              </div>
                             )
                           } catch (e) {
                             // Fallback
@@ -1339,17 +1740,17 @@ export default function ChatApp() {
                                 />
                               </div>
                             )}
-                  </div>
-                )
-              })}
+                          </div>
+                        )
+                      })}
                       {isAiTyping && <TypingIndicator />}
                       <div ref={messagesEndRef} />
                     </>
                   )}
-                    </div>
+                </div>
 
                 {/* Input Area */}
-                <div className="px-6 py-4 bg-[#F8F9FA] border-t border-[#E1E5E9]">
+                <div className="px-4 pb-4 pt-2">
                   {showPollCreator && selectedUser && selectedUser.id !== 'ai-assistant' && (
                     <div className="mb-3">
                       <CreatePoll
@@ -1369,32 +1770,20 @@ export default function ChatApp() {
                         }}
                         onCancel={() => setShowPollCreator(false)}
                       />
-                </div>
-              )}
-
-                  {aiCoPilotEnabled && selectedUser && (
-                    <AICoPilot
-                      input={input}
-                      conversationHistory={messages.map(m => m.content)}
-                      onSelectSuggestion={(suggestion) => {
-                        setInput(suggestion)
-                        inputRef.current?.focus()
-                      }}
-                      enabled={selectedUser.id !== 'ai-assistant'}
-                    />
+                    </div>
                   )}
 
-              <form
-                    className="flex items-center gap-2 w-full mt-auto mb-4"
-                onSubmit={(e) => { e.preventDefault(); sendMessage() }}
-              >
-                    <div className="flex-1 relative">
-                <input
+                  <form
+                    className="w-full"
+                    onSubmit={(e) => { e.preventDefault(); sendMessage() }}
+                  >
+                    <div className="relative w-full rounded-2xl">
+                      <input
                         ref={inputRef}
-                        className="w-full bg-white border border-[#E1E5E9] rounded-[24px] pl-5 pr-5 py-3 text-[14px] text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent placeholder:text-[#94A3B8] shadow-sm"
+                        className="w-full bg-white border border-[#E1E5E9] rounded-2xl pl-5 pr-32 py-2 text-[14px] text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent placeholder:text-[#94A3B8] shadow-sm"
                         placeholder="Type any message"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault()
@@ -1402,17 +1791,26 @@ export default function ChatApp() {
                           }
                         }}
                       />
-                    </div>
-                    <div className="flex items-center gap-1">
+                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
                         <button
                           type="button"
                           onClick={() => {
                             // Handle voice message
                             console.log("Voice message clicked")
                           }}
-                          className="w-8 h-8 rounded-full hover:bg-[#F5F5F5] flex items-center justify-center transition-colors active:scale-95"
+                          className="w-7 h-7 rounded-full hover:bg-[#F5F5F5] flex items-center justify-center transition-colors active:scale-95"
                         >
                           <Mic className="w-4 h-4 text-[#64748B]" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            // Handle emoji picker
+                            console.log("Emoji picker clicked")
+                          }}
+                          className="w-7 h-7 rounded-full hover:bg-[#F5F5F5] flex items-center justify-center transition-colors active:scale-95"
+                        >
+                          <Smile className="w-4 h-4 text-[#64748B]" />
                         </button>
                         <button
                           type="button"
@@ -1421,134 +1819,34 @@ export default function ChatApp() {
                             console.log("File attachment clicked")
                             // You can add file input logic here
                           }}
-                          className="w-8 h-8 rounded-full hover:bg-[#F5F5F5] flex items-center justify-center transition-colors active:scale-95"
+                          className="w-7 h-7 rounded-full hover:bg-[#F5F5F5] flex items-center justify-center transition-colors active:scale-95"
                         >
                           <Paperclip className="w-4 h-4 text-[#64748B]" />
                         </button>
-                        {selectedUser && selectedUser.id !== 'ai-assistant' && (
-                          <button
-                            type="button"
-                            onClick={() => setShowPollCreator(!showPollCreator)}
-                            className={cn(
-                              "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
-                              showPollCreator
-                                ? "bg-[#10B981] text-white"
-                                : "hover:bg-[#F5F5F5] text-[#64748B]"
-                            )}
-                          >
-                            <BarChart3 className="w-4 h-4" />
-                          </button>
-                        )}
                         <button
-                          type="button"
-                          onClick={() => {
-                            // Handle emoji picker
-                            console.log("Emoji picker clicked")
-                          }}
-                          className="w-8 h-8 rounded-full hover:bg-[#F5F5F5] flex items-center justify-center transition-colors active:scale-95"
+                          type="submit"
+                          disabled={!input.trim()}
+                          className="w-7 h-7 rounded-full bg-[#10B981] hover:bg-[#059669] active:bg-[#047857] text-white flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                         >
-                          <Smile className="w-4 h-4 text-[#64748B]" />
-                        </button>
-                        <button
-                  type="submit"
-                  disabled={!input.trim()}
-                          className="w-8 h-8 rounded-full bg-[#10B981] hover:bg-[#059669] active:bg-[#047857] text-white flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
-                >
                           <Send className="w-4 h-4" />
                         </button>
                       </div>
-              </form>
-
-                  {selectedUser && selectedUser.id !== 'ai-assistant' && (
-                    <div className="flex items-center justify-center mt-2">
-                      <button
-                        onClick={() => setAiCoPilotEnabled(!aiCoPilotEnabled)}
-                        className={cn(
-                          "flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-md transition-all font-medium",
-                          aiCoPilotEnabled
-                            ? "bg-[#EDE9FE] text-[#8B5CF6]"
-                            : "bg-[#F5F5F5] text-[#64748B] hover:bg-[#E5E5E5]"
-                        )}
-                      >
-                        <Sparkles className={cn("w-3 h-3", aiCoPilotEnabled && "animate-pulse")} />
-                        <span>AI Co-pilot {aiCoPilotEnabled ? "ON" : "OFF"}</span>
-                      </button>
                     </div>
-                  )}
-            </div>
-          </>
-        ) : (
+                  </form>
+                </div>
+              </div>
+            ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-[#64748B]">
                 <div className="w-24 h-24 bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] rounded-full flex items-center justify-center mb-5">
                   <Bot className="w-12 h-12 text-white" />
-            </div>
+                </div>
                 <h3 className="text-xl font-semibold text-[#111827] mb-2">
                   Welcome to Chat App
                 </h3>
                 <p className="max-w-sm text-center text-sm text-[#64748B]">
                   Select a user from the sidebar to start a conversation or chat with our AI assistant!
                 </p>
-          </div>
-        )}
-
-            {/* Contact Info Panel - Figma Design */}
-            {showContactInfo && selectedUser && (
-              <div className="absolute right-0 top-0 bottom-0 w-[360px] bg-white border-l border-[#E1E5E9] shadow-2xl z-10">
-                <div className="p-6 border-b border-[#E1E5E9] flex items-center justify-between">
-                  <h3 className="font-semibold text-[15px] text-[#111827]">Contact Info</h3>
-                  <button
-                    onClick={() => setShowContactInfo(false)}
-                    className="w-8 h-8 rounded-full hover:bg-[#F5F5F5] flex items-center justify-center transition-colors"
-                  >
-                    <span className="text-[#64748B] text-xl">×</span>
-                  </button>
-                </div>
-                <div className="p-6">
-                  <div className="flex flex-col items-center mb-6">
-                    {selectedUser.image ? (
-                      <img
-                        src={selectedUser.image}
-                        alt={selectedUser.name!}
-                        className="w-20 h-20 rounded-full object-cover mb-3"
-                      />
-                    ) : (
-                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#94A3B8] to-[#64748B] flex items-center justify-center text-white text-2xl font-bold mb-3">
-                        {selectedUser.name?.[0] || "U"}
-                      </div>
-                    )}
-                    <h4 className="font-semibold text-[16px] text-[#111827] mb-1">
-                      {selectedUser.name}
-                    </h4>
-                    <p className="text-[13px] text-[#64748B]">
-                      {selectedUser.email || "No email"}
-                    </p>
-                  </div>
-                  <div className="flex gap-3 mb-6">
-                    <button className="flex-1 bg-[#F8F9FA] hover:bg-[#E5E5E5] py-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
-                      <Phone className="w-4 h-4 text-[#64748B]" />
-                      <span className="text-sm font-medium text-[#111827]">Audio</span>
-                    </button>
-                    <button className="flex-1 bg-[#F8F9FA] hover:bg-[#E5E5E5] py-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
-                      <Video className="w-4 h-4 text-[#64748B]" />
-                      <span className="text-sm font-medium text-[#111827]">Video</span>
-                    </button>
-                  </div>
-                  <div className="flex gap-1 border-b border-[#E1E5E9] mb-4">
-                    <button className="px-4 py-2 text-sm font-medium text-[#111827] border-b-2 border-[#10B981]">
-                      Media
-                    </button>
-                    <button className="px-4 py-2 text-sm font-medium text-[#64748B] hover:text-[#111827]">
-                      Link
-                    </button>
-                    <button className="px-4 py-2 text-sm font-medium text-[#64748B] hover:text-[#111827]">
-                      Docs
-                    </button>
-                  </div>
-                  <div className="text-center text-sm text-[#64748B] py-8">
-                    No media shared yet
-                  </div>
-                </div>
-            </div>
+              </div>
             )}
           </div>
         </div>

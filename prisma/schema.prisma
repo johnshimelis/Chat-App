@@ -1,27 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -35,17 +34,16 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  accounts      Account[]
-  sessions      Session[]
-  
-  sentMessages     Message[] @relation("SentMessages")
+  id               String    @id @default(cuid())
+  name             String?
+  email            String?   @unique
+  emailVerified    DateTime?
+  image            String?
+  password         String?
+  accounts         Account[]
   receivedMessages Message[] @relation("ReceivedMessages")
+  sentMessages     Message[] @relation("SentMessages")
+  sessions         Session[]
 }
 
 model VerificationToken {
@@ -57,21 +55,18 @@ model VerificationToken {
 }
 
 model Message {
-  id        String   @id @default(cuid())
-  content   String
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
-  type      String   @default("text") // text, poll, code, voice
-  metadata  String?  @db.Text // JSON for polls, code language, etc.
-  
-  senderId  String
-  sender    User     @relation("SentMessages", fields: [senderId], references: [id])
-  
+  id         String     @id @default(cuid())
+  content    String
+  createdAt  DateTime   @default(now())
+  senderId   String
   receiverId String
-  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
-  
-  reactions Reaction[]
-  pollVotes PollVote[]
+  isRead     Boolean    @default(false)
+  metadata   String?
+  type       String     @default("text")
+  receiver   User       @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  sender     User       @relation("SentMessages", fields: [senderId], references: [id])
+  pollVotes  PollVote[]
+  reactions  Reaction[]
 }
 
 model Reaction {
@@ -80,32 +75,29 @@ model Reaction {
   messageId String
   userId    String
   createdAt DateTime @default(now())
-  
-  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
   @@unique([messageId, userId, emoji])
 }
 
 model Poll {
-  id        String   @id @default(cuid())
-  messageId String   @unique
+  id        String     @id @default(cuid())
+  messageId String     @unique
   question  String
-  options   String   @db.Text // JSON array of options
-  createdAt DateTime @default(now())
-  
+  options   String
+  createdAt DateTime   @default(now())
   votes     PollVote[]
 }
 
 model PollVote {
-  id        String   @id @default(cuid())
-  pollId    String
-  messageId String
-  userId    String
+  id          String   @id @default(cuid())
+  pollId      String
+  messageId   String
+  userId      String
   optionIndex Int
-  createdAt DateTime @default(now())
-  
-  poll    Poll    @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  
+  createdAt   DateTime @default(now())
+  message     Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  poll        Poll     @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
   @@unique([pollId, userId])
 }

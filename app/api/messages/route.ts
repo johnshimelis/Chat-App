@@ -38,6 +38,8 @@ export async function GET(request: Request) {
                 content: true,
                 isRead: true,
                 createdAt: true,
+                type: true,
+                metadata: true,
                 sender: {
                     select: {
                         id: true,

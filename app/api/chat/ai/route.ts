@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = 'force-dynamic';
 
@@ -20,10 +21,27 @@ export async function POST(req: Request) {
         const genAI = new GoogleGenerativeAI(cleanKey);
         const model = genAI.getGenerativeModel({ model: modelName });
 
-        const { message, history } = await req.json();
+        const { message, userId, history } = await req.json();
 
         if (!message) {
             return NextResponse.json({ response: "Please say something." }, { status: 400 });
+        }
+
+        // 1. Save user message to DB
+        if (userId) {
+            try {
+                await prisma.message.create({
+                    data: {
+                        content: message,
+                        senderId: userId,
+                        receiverId: 'ai-assistant',
+                        type: 'text',
+                        isRead: true
+                    }
+                });
+            } catch (dbErr) {
+                console.error("Failed to save user message to AI:", dbErr);
+            }
         }
 
         const chat = model.startChat({
@@ -32,6 +50,23 @@ export async function POST(req: Request) {
 
         const result = await chat.sendMessage(message);
         const response = result.response.text();
+
+        // 2. Save AI response to DB
+        if (userId) {
+            try {
+                await prisma.message.create({
+                    data: {
+                        content: response,
+                        senderId: 'ai-assistant',
+                        receiverId: userId,
+                        type: 'text',
+                        isRead: true
+                    }
+                });
+            } catch (dbErr) {
+                console.error("Failed to save AI response to DB:", dbErr);
+            }
+        }
 
         return NextResponse.json({ response });
 

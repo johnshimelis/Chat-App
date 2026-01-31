@@ -84,7 +84,7 @@ export async function GET() {
         const usersWithStats = users.map(user => ({
             ...user,
             unreadCount: countMap.get(user.id) || 0,
-            lastMessage: lastMessageMap.get(user.id)?.content || null,
+            lastMessage: lastMessageMap.get(user.id)?.content || (user.id === 'ai-assistant' ? "Always here to help" : null),
             lastMessageTime: lastMessageMap.get(user.id)?.createdAt || null
         }));
 
