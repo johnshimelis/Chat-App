@@ -6,12 +6,21 @@ import { useEffect, useState, useRef, useMemo, useCallback, memo } from "react"
 import io, { Socket } from "socket.io-client"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { LogOut, Send, User as UserIcon, Bot, MoreVertical, Sparkles, Zap, BarChart3, Smile, Home, MessageCircle, Circle, Compass, Folder, Image as ImageIcon, Settings, Search, Phone, Video, Paperclip, Mic, Bell, ChevronDown, ArrowLeft, Pencil, Gift, Sun, Check, CheckCheck, Filter, Star, Archive, VolumeX, Upload, X, Trash2, ChevronRight } from "lucide-react"
+import { LogOut, Send, User as UserIcon, Bot, MoreVertical, Sparkles, Zap, BarChart3, Smile, Home, MessageCircle, Circle, Compass, Folder, Image as ImageIcon, Settings, Search, Phone, Video, Paperclip, Mic, Bell, ChevronDown, ArrowLeft, Pencil, Gift, Sun, Check, CheckCheck, Filter, Star, Archive, VolumeX, Upload, X, Trash2, ChevronRight, ChevronLeft } from "lucide-react"
 import AICoPilot from "@/components/AICoPilot"
 import PollMessage from "@/components/PollMessage"
 import CreatePoll from "@/components/CreatePoll"
 import MessageReactions from "@/components/MessageReactions"
 import ConversationInsights from "@/components/ConversationInsights"
+
+// Static Image Imports for Sidebar
+import logoImg from "@/public/logo.png"
+import homeImg from "@/public/home.png"
+import inboxImg from "@/public/inbox.png"
+import iconsImg from "@/public/icons.png"
+import fileImg from "@/public/file.png"
+import photoImg from "@/public/photo.png"
+import starImg from "@/public/star.png"
 
 type User = {
   id: string
@@ -84,85 +93,88 @@ function UserDropdownComponent(props: UserDropdownProps) {
   const { userName, userEmail, userImage, onClose, onLogout, onGoToDashboard } = props
 
   return (
-    <div className="absolute left-[20px] top-[56px] w-[240px] bg-white shadow-2xl border border-[#E1E5E9] z-[100] rounded-xl overflow-hidden" style={{ maxHeight: '420px' }}>
-      {/* User Info Section */}
-      <div className="p-4 border-b border-[#E1E5E9]">
-        <div className="flex items-center gap-2 mb-3">
-          {userImage ? (
-            <img src={userImage} alt={userName || "User"} className="w-8 h-8 rounded-full" />
-          ) : (
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white text-xs font-bold">
-              {userName?.[0] || "U"}
-            </div>
-          )}
-          <div className="flex-1">
-            <p className="font-semibold text-[13px] text-[#111827]">{userName || "User"}</p>
-            <p className="text-[11px] text-[#64748B]">{userEmail || "No email"}</p>
+    <div className="absolute left-[16px] top-[64px] w-[260px] bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-[#E1E5E9] z-[100] rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      {/* Top Header Section */}
+      <div className="p-2 border-b border-[#F1F5F9] flex flex-col gap-0.5">
+        <button
+          onClick={onGoToDashboard}
+          className="w-full flex items-center gap-3 px-2 py-1.5 rounded-xl hover:bg-[#F5F5F5] transition-colors text-left"
+        >
+          <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#F1F5F9] flex-shrink-0">
+            <ChevronLeft className="w-4 h-4 text-[#64748B]" strokeWidth={2.5} />
           </div>
+          <span className="text-[12px] font-semibold text-[#111827]">Go back to dashboard</span>
+        </button>
+        <button
+          onClick={() => console.log("Rename file")}
+          className="w-full flex items-center gap-3 px-2 py-1.5 rounded-xl bg-[#F3F4F6] hover:bg-[#E9EAEB] transition-colors text-left"
+        >
+          <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm flex-shrink-0">
+            <Pencil className="w-4 h-4 text-[#64748B]" />
+          </div>
+          <span className="text-[12px] font-semibold text-[#111827]">Rename file</span>
+        </button>
+      </div>
+
+      {/* User Info Section */}
+      <div className="px-5 py-2 border-b border-[#F1F5F9]">
+        <p className="font-bold text-[13px] text-[#111827] leading-tight truncate">{userName || "testing2"}</p>
+        <p className="text-[11px] text-[#64748B] leading-tight mt-1 truncate">{userEmail || "testing2@gmail.com"}</p>
+      </div>
+
+      {/* Credits Section */}
+      <div className="px-5 py-3.5 border-b border-[#F1F5F9]">
+        <div className="flex items-center justify-between mb-0.5">
+          <span className="text-[11px] text-[#94A3B8] font-bold uppercase tracking-wider">Credits</span>
+          <span className="text-[11px] text-[#94A3B8] font-bold uppercase tracking-wider">Renews in</span>
+        </div>
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="text-[14px] font-bold text-[#111827]">20 left</span>
+          <span className="text-[14px] font-bold text-[#111827]">6h 24m</span>
         </div>
 
-        {/* Credits Section */}
-        <div className="bg-[#F8F9FA] rounded-lg p-3">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[11px] font-semibold text-[#111827]">Credits</span>
-            <span className="text-[11px] font-semibold text-[#10B981]">20 left</span>
-          </div>
-          <div className="w-full bg-[#E2E8F0] rounded-full h-1.5 mb-1.5">
-            <div className="bg-[#10B981] h-1.5 rounded-full" style={{ width: '80%' }}></div>
-          </div>
-          <div className="flex items-center justify-between text-[10px] text-[#64748B] mb-0.5">
-            <span>5 of 25 used today</span>
-            <span className="text-[#10B981]">+25 tomorrow</span>
-          </div>
-          <p className="text-[10px] text-[#64748B]">Renews in 6h 24m</p>
+        <div className="w-full bg-[#E2E8F0] rounded-full h-[6px] mb-3 overflow-hidden">
+          <div className="bg-[#10B981] h-full rounded-full transition-all duration-1000" style={{ width: '100%' }}></div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] text-[#94A3B8] font-medium">5 of 25 used today</span>
+          <span className="text-[10px] font-bold text-[#10B981]">+25 <span className="text-[#94A3B8] font-normal">tomorrow</span></span>
         </div>
       </div>
 
-      {/* Menu Options */}
-      <div className="p-1.5">
+      {/* Action Items Section */}
+      <div className="p-2 border-b border-[#F1F5F9] flex flex-col gap-0.5">
         <button
-          onClick={onGoToDashboard}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
+          onClick={() => console.log("Win free credits")}
+          className="w-full flex items-center gap-3 px-2 py-1.5 rounded-xl hover:bg-[#F5F5F5] transition-colors text-left"
         >
-          <ArrowLeft className="w-3.5 h-3.5 text-[#64748B]" />
-          <span className="text-[12px] text-[#111827]">Go back to dashboard</span>
+          <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#F1F5F9] flex-shrink-0">
+            <Gift className="w-4 h-4 text-[#64748B]" />
+          </div>
+          <span className="text-[12px] font-semibold text-[#111827]">Win free credits</span>
         </button>
         <button
-          onClick={() => {
-            // Handle rename file
-            console.log("Rename file clicked")
-          }}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
+          onClick={() => console.log("Theme style")}
+          className="w-full flex items-center gap-3 px-2 py-1.5 rounded-xl hover:bg-[#F5F5F5] transition-colors text-left"
         >
-          <Pencil className="w-3.5 h-3.5 text-[#64748B]" />
-          <span className="text-[12px] text-[#111827]">Rename file</span>
+          <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#F1F5F9] flex-shrink-0">
+            <Sun className="w-4 h-4 text-[#64748B]" />
+          </div>
+          <span className="text-[12px] font-semibold text-[#111827]">Theme Style</span>
         </button>
-        <button
-          onClick={() => {
-            // Handle win free credits
-            console.log("Win free credits clicked")
-          }}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
-        >
-          <Gift className="w-3.5 h-3.5 text-[#64748B]" />
-          <span className="text-[12px] text-[#111827]">Win free credits</span>
-        </button>
-        <button
-          onClick={() => {
-            // Handle theme style
-            console.log("Theme style clicked")
-          }}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
-        >
-          <Sun className="w-3.5 h-3.5 text-[#64748B]" />
-          <span className="text-[12px] text-[#111827]">Theme Style</span>
-        </button>
+      </div>
+
+      {/* Footer Section */}
+      <div className="p-2">
         <button
           onClick={onLogout}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#F5F5F5] active:bg-[#E5E5E5] transition-colors text-left active:scale-[0.98]"
+          className="w-full flex items-center gap-3 px-2 py-1.5 rounded-xl hover:bg-[#FEF2F2] group transition-colors text-left"
         >
-          <LogOut className="w-3.5 h-3.5 text-[#64748B]" />
-          <span className="text-[12px] text-[#111827]">Log out</span>
+          <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#F1F5F9] group-hover:bg-[#FEE2E2] flex-shrink-0 transition-colors">
+            <LogOut className="w-4 h-4 text-[#64748B] group-hover:text-[#EF4444] transition-colors" />
+          </div>
+          <span className="text-[12px] font-semibold text-[#111827] group-hover:text-[#EF4444]">Log out</span>
         </button>
       </div>
     </div>
@@ -218,7 +230,7 @@ function ContextMenuComponent(props: ContextMenuProps) {
   return (
     <div
       ref={menuRef}
-      className="context-menu fixed bg-white shadow-lg border border-[#E1E5E9] rounded-lg z-[9999] w-[160px] py-0.5"
+      className="context-menu fixed bg-white shadow-[0_15px_50px_-12px_rgba(0,0,0,0.25)] border border-[#F1F5F9] rounded-2xl z-[9999] w-[155px] py-1 animate-in fade-in zoom-in-95 duration-200"
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
@@ -237,13 +249,10 @@ function ContextMenuComponent(props: ContextMenuProps) {
           onMarkAsUnread()
           onClose()
         }}
-        className="w-full flex items-center justify-between px-2.5 py-0.5 hover:bg-[#F5F5F5] transition-colors text-left"
+        className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#F3F4F6] transition-colors text-left group"
       >
-        <div className="flex items-center gap-1.5">
-          <MessageCircle className="w-3 h-3 text-[#64748B]" />
-          <span className="text-[11px] text-[#111827]">Mark as unread</span>
-        </div>
-        <Check className="w-3 h-3 text-[#64748B]" />
+        <MessageCircle className="w-3.5 h-3.5 text-[#64748B] group-hover:text-[#111827]" />
+        <span className="text-[11px] font-semibold text-[#111827] group-hover:text-[#111827]">Mark as unread</span>
       </button>
 
       <button
@@ -251,10 +260,10 @@ function ContextMenuComponent(props: ContextMenuProps) {
           onArchive()
           onClose()
         }}
-        className="w-full flex items-center gap-1.5 px-2.5 py-0.5 hover:bg-[#F5F5F5] transition-colors text-left"
+        className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#F3F4F6] transition-colors text-left group"
       >
-        <Archive className="w-3 h-3 text-[#64748B]" />
-        <span className="text-[11px] text-[#111827]">Archive</span>
+        <Archive className="w-3.5 h-3.5 text-[#64748B] group-hover:text-[#111827]" />
+        <span className="text-[11px] font-semibold text-[#111827] group-hover:text-[#111827]">Archive</span>
       </button>
 
       <button
@@ -262,13 +271,13 @@ function ContextMenuComponent(props: ContextMenuProps) {
           onMute()
           onClose()
         }}
-        className="w-full flex items-center justify-between px-2.5 py-0.5 hover:bg-[#F5F5F5] transition-colors text-left"
+        className="w-full flex items-center justify-between px-3 py-1.5 hover:bg-[#F3F4F6] transition-colors text-left group"
       >
-        <div className="flex items-center gap-1.5">
-          <VolumeX className="w-3 h-3 text-[#64748B]" />
-          <span className="text-[11px] text-[#111827]">Mute</span>
+        <div className="flex items-center gap-3">
+          <VolumeX className="w-3.5 h-3.5 text-[#64748B] group-hover:text-[#111827]" />
+          <span className="text-[11px] font-semibold text-[#111827] group-hover:text-[#111827]">Mute</span>
         </div>
-        <ChevronRight className="w-3 h-3 text-[#64748B]" />
+        <ChevronRight className="w-3 h-3 text-[#94A3B8] group-hover:text-[#111827]" />
       </button>
 
       <button
@@ -276,10 +285,10 @@ function ContextMenuComponent(props: ContextMenuProps) {
           onContactInfo()
           onClose()
         }}
-        className="w-full flex items-center gap-1.5 px-2.5 py-0.5 hover:bg-[#F5F5F5] transition-colors text-left"
+        className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#F3F4F6] transition-colors text-left group"
       >
-        <UserIcon className="w-3 h-3 text-[#64748B]" />
-        <span className="text-[11px] text-[#111827]">Contact info</span>
+        <UserIcon className="w-3.5 h-3.5 text-[#64748B] group-hover:text-[#111827]" />
+        <span className="text-[11px] font-semibold text-[#111827] group-hover:text-[#111827]">Contact info</span>
       </button>
 
       <button
@@ -287,10 +296,10 @@ function ContextMenuComponent(props: ContextMenuProps) {
           onExportChat()
           onClose()
         }}
-        className="w-full flex items-center gap-1.5 px-2.5 py-0.5 hover:bg-[#F5F5F5] transition-colors text-left"
+        className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#F3F4F6] transition-colors text-left group"
       >
-        <Upload className="w-3 h-3 text-[#64748B]" />
-        <span className="text-[11px] text-[#111827]">Export chat</span>
+        <Upload className="w-3.5 h-3.5 text-[#64748B] group-hover:text-[#111827]" />
+        <span className="text-[11px] font-semibold text-[#111827] group-hover:text-[#111827]">Export chat</span>
       </button>
 
       <button
@@ -298,10 +307,10 @@ function ContextMenuComponent(props: ContextMenuProps) {
           onClearChat()
           onClose()
         }}
-        className="w-full flex items-center gap-1.5 px-2.5 py-0.5 hover:bg-[#F5F5F5] transition-colors text-left"
+        className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#F3F4F6] transition-colors text-left group"
       >
-        <X className="w-3 h-3 text-[#64748B]" />
-        <span className="text-[11px] text-[#111827]">Clear chat</span>
+        <X className="w-3.5 h-3.5 text-[#64748B] group-hover:text-[#111827]" />
+        <span className="text-[11px] font-semibold text-[#111827] group-hover:text-[#111827]">Clear chat</span>
       </button>
 
       <button
@@ -309,10 +318,10 @@ function ContextMenuComponent(props: ContextMenuProps) {
           onDeleteChat()
           onClose()
         }}
-        className="w-full flex items-center gap-1.5 px-2.5 py-0.5 hover:bg-[#F5F5F5] transition-colors text-left"
+        className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#FEF2F2] transition-colors text-left group"
       >
-        <Trash2 className="w-3 h-3 text-[#EF4444]" />
-        <span className="text-[11px] text-[#EF4444]">Delete chat</span>
+        <Trash2 className="w-3.5 h-3.5 text-[#EF4444]" />
+        <span className="text-[11px] font-semibold text-[#EF4444]">Delete chat</span>
       </button>
     </div>
   )
@@ -331,89 +340,89 @@ function LeftNavBarComponent(props: LeftNavBarComponentProps) {
   const { activeSection, userImage, onLogoClick, onSectionChange } = props
 
   return (
-    <div className="w-[72px] bg-[#f3f3ee] border-r border-[#E1E5E9] flex flex-col items-center h-full relative">
+    <div className="w-[72px] bg-[#f8f9fa] border-r border-[#E5E7EB] flex flex-col items-center h-full relative">
       {/* Logo Component - Added as requested */}
       <div className="pt-6 pb-2">
         <button
           onClick={onLogoClick}
-          className="w-8 h-8 rounded-xl bg-[#10B981] flex items-center justify-center shadow-sm hover:shadow-md transition-all active:scale-95"
+          className="w-10 h-10 flex items-center justify-center transition-all active:scale-95"
         >
-          <Zap className="w-5 h-5 text-white shrink-0" fill="currentColor" />
+          <img src={logoImg.src} alt="Logo" className="w-10 h-10 object-contain" />
         </button>
       </div>
 
-      {/* Navigation Icons - Only the ones circled in red */}
-      <div className="flex flex-col gap-3 pt-2">
+      {/* Navigation Icons - Using refined gap and rectangular highlights */}
+      <div className="flex flex-col gap-1.5 pt-2">
         <button
           onClick={() => onSectionChange("home")}
           className={cn(
-            "w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer",
+            "w-[40px] h-[40px] rounded-lg flex items-center justify-center transition-all cursor-pointer",
             activeSection === "home"
-              ? "bg-[#E7F7EF] border border-[#10B981] text-[#111827]"
-              : "text-[#111827] hover:bg-[#E2E8F0]"
+              ? "bg-[#E7F7EF] border border-[#10B981]"
+              : "hover:bg-[#E2E8F0]"
           )}
         >
-          <Home className="w-5 h-5" />
+          <img src={homeImg.src} alt="Home" className="w-[34px] h-[34px] object-contain" />
         </button>
         <button
           onClick={() => onSectionChange("messages")}
           className={cn(
-            "w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer",
+            "w-[40px] h-[40px] rounded-lg flex items-center justify-center transition-all cursor-pointer",
             activeSection === "messages"
-              ? "bg-[#E7F7EF] border border-[#10B981] text-[#111827]"
-              : "text-[#111827] hover:bg-[#E2E8F0]"
+              ? "bg-[#E7F7EF] border border-[#10B981]"
+              : "bg-transparent border-transparent hover:bg-transparent"
           )}
         >
-          <MessageCircle className="w-5 h-5" strokeWidth={2} />
+          <img src={inboxImg.src} alt="Inbox" className="w-[20px] h-[20px] object-contain" />
         </button>
         <button
           onClick={() => onSectionChange("explore")}
           className={cn(
-            "w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer",
+            "w-[40px] h-[40px] rounded-lg flex items-center justify-center transition-all cursor-pointer",
             activeSection === "explore"
-              ? "bg-[#E7F7EF] border border-[#10B981] text-[#111827]"
-              : "text-[#111827] hover:bg-[#E2E8F0]"
+              ? "bg-[#E7F7EF] border border-[#10B981]"
+              : "hover:bg-[#E2E8F0]"
           )}
         >
-          <Compass className="w-5 h-5" />
+          <img src={iconsImg.src} alt="Icons" className="w-[34px] h-[34px] object-contain" />
         </button>
         <button
           onClick={() => onSectionChange("files")}
           className={cn(
-            "w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer",
+            "w-[40px] h-[40px] rounded-lg flex items-center justify-center transition-all cursor-pointer",
             activeSection === "files"
-              ? "bg-[#E7F7EF] border border-[#10B981] text-[#111827]"
-              : "text-[#111827] hover:bg-[#E2E8F0]"
+              ? "bg-[#E7F7EF] border border-[#10B981]"
+              : "hover:bg-[#E2E8F0]"
           )}
         >
-          <Folder className="w-5 h-5" />
+          <img src={fileImg.src} alt="File" className="w-[34px] h-[34px] object-contain" />
         </button>
         <button
           onClick={() => onSectionChange("gallery")}
           className={cn(
-            "w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer",
+            "w-[40px] h-[40px] rounded-lg flex items-center justify-center transition-all cursor-pointer",
             activeSection === "gallery"
-              ? "bg-[#E7F7EF] border border-[#10B981] text-[#111827]"
-              : "text-[#111827] hover:bg-[#E2E8F0]"
+              ? "bg-[#E7F7EF] border border-[#10B981]"
+              : "hover:bg-[#E2E8F0]"
           )}
         >
-          <ImageIcon className="w-5 h-5" />
+          <img src={photoImg.src} alt="Photo" className="w-[34px] h-[34px] object-contain" />
         </button>
       </div>
 
       {/* Star Icon and Profile Picture at Bottom - Left bottom corner */}
-      <div className="flex flex-col gap-2 items-center mt-auto pb-4">
+      <div className="flex flex-col gap-1.5 items-center mt-auto pb-4">
         {/* Star Icon */}
         <button
           onClick={() => onSectionChange("favorites")}
           className={cn(
-            "w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer flex-shrink-0",
+            "w-[40px] h-[40px] rounded-lg flex items-center justify-center transition-all cursor-pointer flex-shrink-0",
             activeSection === "favorites"
-              ? "bg-[#E7F7EF] border border-[#10B981] text-[#111827]"
-              : "text-[#111827] hover:bg-[#E2E8F0]"
+              ? "bg-[#E7F7EF] border border-[#10B981]"
+              : "hover:bg-[#E2E8F0]"
           )}
         >
-          <Star className="w-5 h-5" />
+          <img src={starImg.src} alt="Star" className="w-[34px] h-[34px] object-contain" />
         </button>
         {/* Profile Picture */}
         <button
@@ -517,7 +526,7 @@ function ConversationItemComponent(props: ConversationItemProps) {
           <p className="font-semibold text-[13.5px] text-[#111827] truncate">
             {user.name}
           </p>
-          <span className="text-[10px] text-[#64748B] ml-2 whitespace-nowrap">
+          <span className="text-[10px] text-[#64748B] ml-2 whitespace-nowrap" suppressHydrationWarning>
             {timeAgo}
           </span>
         </div>
@@ -593,7 +602,7 @@ function MessageBubbleComponent(props: MessageBubbleProps) {
         "flex items-center gap-1.5 mt-1",
         isMe ? "justify-end mr-1" : "justify-start ml-10"
       )}>
-        <span className="text-[11px] text-[#64748B]">
+        <span className="text-[11px] text-[#64748B]" suppressHydrationWarning>
           {time}
         </span>
         {isMe && (
@@ -656,6 +665,7 @@ export default function ChatApp() {
   const selectedUserRef = useRef<User | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const newMessageModalRef = useRef<HTMLDivElement>(null)
   const loadedUsersRef = useRef<Set<string>>(new Set())
 
   useEffect(() => {
@@ -694,6 +704,30 @@ export default function ChatApp() {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [showUserDropdown])
+
+  // Close New Message Modal when clicking outside
+  useEffect(() => {
+    if (!showNewMessageModal) return
+
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node
+      // Don't close if clicking the New Message button
+      const newMsgButton = document.querySelector('button[onClick*="setShowNewMessageModal(true)"]')
+      if (newMessageModalRef.current && !newMessageModalRef.current.contains(target)) {
+        setShowNewMessageModal(false)
+        setNewMessageSearch("")
+      }
+    }
+
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside)
+    }, 100)
+
+    return () => {
+      clearTimeout(timeoutId)
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showNewMessageModal])
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -1379,25 +1413,23 @@ export default function ChatApp() {
           </div>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#64748B]" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
               <input
                 type="text"
                 placeholder="Search"
                 value={topSearchQuery}
                 onChange={(e) => setTopSearchQuery(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && e.metaKey) {
-                    // Handle Cmd+K shortcut
+                  if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
                     e.preventDefault()
                     const searchInput = document.querySelector('input[placeholder="Search"]') as HTMLInputElement
                     searchInput?.focus()
                   }
                 }}
-                className="pl-9 pr-20 py-1.5 bg-[#F8F9FA] border border-[#E1E5E9] rounded-lg text-sm text-[#111827] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent w-[240px]"
+                className="pl-10 pr-16 py-1.5 bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl text-[13px] text-[#111827] placeholder:text-[#94A3B8] focus:outline-none focus:ring-1 focus:ring-[#10B981] transition-all w-[320px]"
               />
-              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1 text-[11px] text-[#94A3B8]">
-                <kbd className="px-1.5 py-0.5 bg-white border border-[#E1E5E9] rounded text-[10px] text-[#64748B]">⌘</kbd>
-                <kbd className="px-1.5 py-0.5 bg-white border border-[#E1E5E9] rounded text-[10px] text-[#64748B]">K</kbd>
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center pointer-events-none">
+                <div className="px-1.5 py-0.5 bg-[#F1F5F9] border border-[#E2E8F0] rounded text-[10px] font-medium text-[#64748B]">⌘+K</div>
               </div>
             </div>
             <button
@@ -1405,7 +1437,7 @@ export default function ChatApp() {
                 // Handle notifications
                 console.log("Notifications clicked")
               }}
-              className="w-8 h-8 rounded-lg bg-[#F8F9FA] hover:bg-[#F0F0F0] flex items-center justify-center transition-colors active:scale-95"
+              className="w-9 h-9 rounded-xl border border-[#E5E7EB] hover:bg-[#F8F9FA] flex items-center justify-center transition-all active:scale-95 shadow-sm"
             >
               <Bell className="w-4 h-4 text-[#64748B]" />
             </button>
@@ -1414,24 +1446,22 @@ export default function ChatApp() {
                 // Handle settings
                 console.log("Settings clicked")
               }}
-              className="w-8 h-8 rounded-lg bg-[#F8F9FA] hover:bg-[#F0F0F0] flex items-center justify-center transition-colors active:scale-95"
+              className="w-9 h-9 rounded-xl border border-[#E5E7EB] hover:bg-[#F8F9FA] flex items-center justify-center transition-all active:scale-95 shadow-sm"
             >
               <Settings className="w-4 h-4 text-[#64748B]" />
             </button>
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setShowUserDropdown(!showUserDropdown)}
-                className="flex items-center gap-2 hover:bg-[#F5F5F5] rounded-lg px-2 py-1.5 transition-colors"
-              >
-                {session?.user?.image ? (
-                  <img src={session.user.image} alt={session.user.name || "User"} className="w-8 h-8 rounded-full" />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white text-xs font-bold">
-                    {session?.user?.name?.[0] || "U"}
-                  </div>
-                )}
-                <ChevronDown className="w-4 h-4 text-[#64748B]" />
-              </button>
+
+            <div className="w-[1px] h-6 bg-[#E5E7EB] mx-1"></div>
+
+            <div className="flex items-center gap-2 hover:bg-[#F8F9FA] rounded-xl px-2 py-1.5 transition-all cursor-pointer border border-transparent hover:border-[#E5E7EB]">
+              {session?.user?.image ? (
+                <img src={session.user.image} alt={session.user.name || "User"} className="w-8 h-8 rounded-full border border-[#E5E7EB]" />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                  {session?.user?.name?.[0] || "U"}
+                </div>
+              )}
+              <ChevronDown className="w-4 h-4 text-[#64748B]" />
             </div>
           </div>
         </div>
@@ -1440,28 +1470,28 @@ export default function ChatApp() {
           {/* Left Panel - Conversation List - Figma Design */}
           <div className="w-[360px] bg-white rounded-2xl flex flex-col relative overflow-hidden shadow-sm flex-shrink-0" style={{ overflowX: 'visible', alignSelf: 'stretch' }}>
             {/* Header */}
-            <div className="h-[56px] px-5 py-4 border-b border-[#E1E5E9] flex items-center justify-between">
-              <h2 className="text-lg font-bold text-[#111827]">All Messages</h2>
+            <div className="h-[56px] px-5 py-4 flex items-center justify-between">
+              <h2 className="text-[20px] font-bold text-[#111827]">All Message</h2>
               <button
                 onClick={() => setShowNewMessageModal(true)}
-                className="bg-[#10B981] hover:bg-[#059669] active:bg-[#047857] text-white px-2.5 py-1 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors active:scale-95"
+                className="bg-[#10B981] hover:bg-[#059669] active:bg-[#047857] text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 shadow-sm"
               >
-                <span className="text-sm leading-none">+</span>
+                <Pencil className="w-3.5 h-3.5" />
                 New Message
               </button>
             </div>
 
             {/* Search Bar with Filter */}
-            <div className="px-5 py-3 border-b border-[#E1E5E9]">
+            <div className="px-5 py-3">
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#64748B]" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
                   <input
                     type="text"
                     placeholder="Search in message"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full h-8 pl-10 pr-5 bg-[#F8F9FA] border border-[#E1E5E9] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
+                    className="w-full h-9 pl-10 pr-5 bg-[#F8F9FA] border border-[#E5E7EB] rounded-xl text-[13px] focus:outline-none focus:ring-1 focus:ring-[#10B981] transition-all placeholder:text-[#94A3B8]"
                   />
                 </div>
                 <button
@@ -1469,7 +1499,7 @@ export default function ChatApp() {
                     // Handle filter
                     console.log("Filter clicked")
                   }}
-                  className="w-8 h-8 bg-[#F8F9FA] hover:bg-[#F0F0F0] rounded-lg flex items-center justify-center transition-colors active:scale-95 border border-[#E1E5E9]"
+                  className="w-9 h-9 bg-white hover:bg-[#F8F9FA] rounded-xl flex items-center justify-center transition-colors active:scale-95 border border-[#E5E7EB] shadow-sm"
                 >
                   <Filter className="w-4 h-4 text-[#64748B]" />
                 </button>
@@ -1517,82 +1547,82 @@ export default function ChatApp() {
 
             {/* New Message Modal */}
             {showNewMessageModal && (
-              <div className="absolute top-16 right-0 w-[280px] h-[360px] bg-white rounded-lg shadow-2xl border border-[#E1E5E9] z-50 flex flex-col overflow-hidden">
+              <div
+                ref={newMessageModalRef}
+                className="absolute top-[48px] right-[20px] w-[200px] h-[300px] bg-white rounded-xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] border border-[#F1F5F9] z-[60] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-300"
+              >
                 {/* Modal Header */}
-                <div className="px-3 py-2 border-b border-[#E1E5E9] flex items-center justify-between flex-shrink-0">
-                  <h2 className="text-xs font-semibold text-[#111827]">New Message</h2>
+                <div className="px-3 md:px-4 pt-3 pb-0 flex items-center justify-between flex-shrink-0">
+                  <h2 className="text-[11px] font-bold text-[#111827]">New Message</h2>
                   <button
                     onClick={() => {
                       setShowNewMessageModal(false)
                       setNewMessageSearch("")
                     }}
-                    className="w-5 h-5 rounded-full hover:bg-[#F5F5F5] flex items-center justify-center transition-colors"
+                    className="w-4 h-4 rounded-full hover:bg-[#F5F5F5] flex items-center justify-center transition-colors group"
                   >
-                    <span className="text-sm text-[#64748B] leading-none">×</span>
+                    <X className="w-2.5 h-2.5 text-[#94A3B8] group-hover:text-[#111827]" />
                   </button>
                 </div>
 
                 {/* Search Bar */}
-                <div className="px-3 py-1.5 border-b border-[#E1E5E9] flex-shrink-0">
-                  <div className="relative">
-                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-[#64748B]" />
+                <div className="px-3 md:px-4 pb-2 flex-shrink-0">
+                  <div className="relative mt-1">
+                    <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-2.5 h-2.5 text-[#94A3B8]" />
                     <input
                       type="text"
                       placeholder="Search name or email"
                       value={newMessageSearch}
                       onChange={(e) => setNewMessageSearch(e.target.value)}
-                      className="w-full pl-7 pr-2 py-1 bg-[#F8F9FA] border border-[#E1E5E9] rounded-lg text-[10px] focus:outline-none focus:ring-1 focus:ring-[#10B981] focus:border-transparent"
+                      className="w-full h-7 pl-7 pr-3 bg-[#F8FAFC] border-none rounded-lg text-[9.5px] focus:outline-none focus:ring-0 placeholder:text-[#94A3B8] transition-all"
                     />
                   </div>
                 </div>
 
                 {/* User List */}
-                <div className="flex-1 overflow-y-auto min-h-0">
+                <div className="flex-1 overflow-y-auto px-1 pb-3 custom-scrollbar">
                   {filteredUsersForNewMessage.length > 0 ? (
-                    filteredUsersForNewMessage.map((user) => (
-                      <div
-                        key={user.id}
-                        onClick={() => {
-                          setSelectedUser(user)
-                          setShowNewMessageModal(false)
-                          setNewMessageSearch("")
-                        }}
-                        className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[#F5F5F5] transition-colors"
-                      >
-                        {/* Profile Picture */}
-                        <div className="relative flex-shrink-0">
-                          {user.image ? (
-                            <img
-                              src={user.image}
-                              alt={user.name!}
-                              className="w-7 h-7 rounded-full object-cover ring-1 ring-[#E2E8F0]"
-                            />
-                          ) : (
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white text-[10px] font-semibold ring-1 ring-[#E2E8F0]">
-                              {user.name?.[0]?.toUpperCase() || "U"}
-                            </div>
-                          )}
-                          {user.online && (
-                            <div className="absolute bottom-0 right-0 w-2 h-2 bg-[#10B981] rounded-full border border-white"></div>
-                          )}
-                        </div>
+                    <div className="flex flex-col gap-1.5">
+                      {filteredUsersForNewMessage.map((user) => (
+                        <div
+                          key={user.id}
+                          onClick={() => {
+                            setSelectedUser(user)
+                            setShowNewMessageModal(false)
+                            setNewMessageSearch("")
+                          }}
+                          className="flex items-center gap-2.5 px-2.5 py-1 rounded-[10px] cursor-pointer hover:bg-[#F3F4F6] transition-all group"
+                        >
+                          {/* Profile Picture */}
+                          <div className="relative flex-shrink-0">
+                            {user.image ? (
+                              <img
+                                src={user.image}
+                                alt={user.name!}
+                                className="w-5 h-5 rounded-full object-cover ring-1 ring-[#F8FAFC]"
+                              />
+                            ) : (
+                              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white text-[9px] font-bold ring-1 ring-[#F8FAFC]">
+                                {user.name?.[0]?.toUpperCase() || "U"}
+                              </div>
+                            )}
+                            {user.online && (
+                              <div className="absolute bottom-0 right-0 w-1.5 h-1.5 bg-[#10B981] rounded-full border border-white"></div>
+                            )}
+                          </div>
 
-                        {/* User Info */}
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-[11px] text-[#111827] truncate">
-                            {user.name}
-                          </p>
-                          {user.email && (
-                            <p className="text-[9px] text-[#64748B] truncate">
-                              {user.email}
+                          {/* User Info */}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-bold text-[10.5px] text-[#111827] truncate group-hover:text-[#10B981] transition-colors">
+                              {user.name}
                             </p>
-                          )}
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      ))}
+                    </div>
                   ) : (
-                    <div className="flex items-center justify-center py-6">
-                      <p className="text-[#64748B] text-[10px]">
+                    <div className="flex flex-col items-center justify-center py-4">
+                      <p className="text-[#94A3B8] text-[9.5px]">
                         {newMessageSearch.trim() ? "No users found" : "No users available"}
                       </p>
                     </div>
